@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>AttributeExporterXrmToolBoxPlugin</AssemblyName>
+    <RootNamespace>AttributeExporterXrmToolBoxPlugin</RootNamespace>
+    <Version>1.0.0</Version>
+    <Authors>Your Name</Authors>
+    <Company>Your Company</Company>
+    <Description>XRM ToolBox Plugin for exporting attribute metadata to CSV</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McTools.Xrm.Connection" Version="1.2023.12.1" />
+    <PackageReference Include="McTools.Xrm.Connection.WinForms" Version="1.2023.12.1" />
+    <PackageReference Include="Microsoft.Xrm.Sdk" Version="9.0.2.45" />
+    <PackageReference Include="Microsoft.Xrm.Sdk.Deployment" Version="9.0.2.45" />
+    <PackageReference Include="Microsoft.CrmSdk.CoreTools" Version="9.0.2.45" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <!-- System.Windows.Forms.DataVisualization is not needed for this project -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+</Project>
