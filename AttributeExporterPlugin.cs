@@ -11,8 +11,8 @@ namespace AttributeExporterXrmToolBoxPlugin
     [Export(typeof(IXrmToolBoxPlugin))]
     [ExportMetadata("Name", "Attribute Metadata Exporter")]
     [ExportMetadata("Description", "Export attribute metadata from Dynamics 365/Power Platform to CSV")]
-    [ExportMetadata("SmallImageBase64", "")] // Replace with a base64 string of a 16x16 icon
-    [ExportMetadata("BigImageBase64", "")]   // Replace with a base64 string of a 32x32 icon
+    [ExportMetadata("SmallImageBase64", null)] // Replace with a base64 string of a 16x16 icon
+    [ExportMetadata("BigImageBase64", null)]   // Replace with a base64 string of a 32x32 icon
     [ExportMetadata("BackgroundColor", "White")]
     [ExportMetadata("PrimaryFontColor", "Black")]
     [ExportMetadata("SecondaryFontColor", "Gray")]
