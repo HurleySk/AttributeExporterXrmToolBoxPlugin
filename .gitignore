@@ -187,3 +187,6 @@ obj/Release/net48/Costura/F1F25C01F6ACF33BDD62C4F82D3EF078E76F0906.costura.costu
 obj/Release/net48/Costura/F35A9CA4C1A48A23C13A353FC530EB4EE509D552.costura.mctools.xrm.connection.dll.compressed.compressed
 obj/Release/net48/Costura/F24399B09AA836A17C9E73EB1882DB00415F550E.costura.microsoft.xrm.sdk.workflow.dll.compressed.compressed
 obj/Release/net48/Costura/FA6D78B393413D007CC154F4C9FE7400BF2DCDBF.costura.microsoft.bcl.hashcode.dll.compressed.compressed
+obj/Release/net48/AttributeExporterXrmToolBoxPlugin.csproj.Fody.RuntimeCopyLocal.cache
+obj/Release/net48/Costura/028E9832F421F11F9497C610F1734E0F3D868037.costura.costura.dll.compressed.compressed
+obj/Release/net48/Costura/806F4C19B2D7FD9E3B836269EC07647019A29E95.costura.costura.pdb.compressed.compressed
