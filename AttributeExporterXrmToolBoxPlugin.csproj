@@ -43,6 +43,10 @@
     <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" PrivateAssets="all"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+
   <!-- This tells ILRepack to merge CsvHelper.dll into the main plugin assembly -->
   <ItemGroup>
     <ILRepackInputAssemblies Include="$(OutputPath)\CsvHelper.dll" />
