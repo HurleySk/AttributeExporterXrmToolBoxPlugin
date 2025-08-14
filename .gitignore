@@ -10,3 +10,11 @@ obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.AssemblyInfoInputs.ca
 obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.assets.cache
 obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.csproj.AssemblyReference.cache
 obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.GeneratedMSBuildEditorConfig.editorconfig
+obj/Debug/net48/.NETFramework,Version=v4.8.AssemblyAttributes.cs
+obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.AssemblyInfo.cs
+obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.AssemblyInfoInputs.cache
+obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.assets.cache
+obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.csproj.AssemblyReference.cache
+obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.csproj.FileListAbsolute.txt
+obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.csproj.GenerateResource.cache
+obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.GeneratedMSBuildEditorConfig.editorconfig
