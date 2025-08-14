@@ -1,0 +1,12 @@
+AttributeExporterXrmToolBoxPlugin.sln
+obj/AttributeExporterXrmToolBoxPlugin.csproj.nuget.dgspec.json
+obj/AttributeExporterXrmToolBoxPlugin.csproj.nuget.g.props
+obj/AttributeExporterXrmToolBoxPlugin.csproj.nuget.g.targets
+obj/project.assets.json
+obj/project.nuget.cache
+obj/Debug/net6.0-windows/.NETCoreApp,Version=v6.0.AssemblyAttributes.cs
+obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.AssemblyInfo.cs
+obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.AssemblyInfoInputs.cache
+obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.assets.cache
+obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.csproj.AssemblyReference.cache
+obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.GeneratedMSBuildEditorConfig.editorconfig
