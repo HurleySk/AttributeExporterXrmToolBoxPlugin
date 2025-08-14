@@ -38,5 +38,14 @@
 
     <!-- Utility -->
     <PackageReference Include="CsvHelper" Version="30.0.1" />
+
+    <!-- ILRepack for merging dependencies -->
+    <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" PrivateAssets="all"/>
   </ItemGroup>
+
+  <!-- This tells ILRepack to merge CsvHelper.dll into the main plugin assembly -->
+  <ItemGroup>
+    <ILRepackInputAssemblies Include="$(OutputPath)\CsvHelper.dll" />
+  </ItemGroup>
+
 </Project>

@@ -134,3 +134,7 @@ obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.dll
 obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.pdb
 obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.Properties.Resources.resources
 obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.sourcelink.json
+bin/Release/net48/Microsoft.Build.Framework.dll
+bin/Release/net48/Microsoft.Build.Utilities.Core.dll
+bin/Release/net48/Microsoft.VisualStudio.Setup.Configuration.Interop.dll
+bin/Release/net48/System.Collections.Immutable.dll
