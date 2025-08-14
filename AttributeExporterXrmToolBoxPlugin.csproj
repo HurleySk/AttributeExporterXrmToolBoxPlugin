@@ -16,7 +16,7 @@
     <Authors>Samuel Hurley</Authors>
     <Company>Procentrix</Company>
     <Description>XRM ToolBox Plugin for exporting attribute metadata to CSV</Description>
-    <CopyLockFileAssemblies>true</CopyLockFileAssemblies>
+    <CopyLocalLockFileAssemblies >true</CopyLocalLockFileAssemblies >
   </PropertyGroup>
 
   <ItemGroup>
