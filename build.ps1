@@ -12,7 +12,7 @@ Write-Host ""
 Write-Host "Build complete!" -ForegroundColor Green
 Write-Host ""
 Write-Host "To install the plugin:" -ForegroundColor Cyan
-Write-Host "1. Copy the DLL from bin\Release\net6.0-windows\ to your XRM ToolBox plugins folder" -ForegroundColor White
+Write-Host "1. Copy the DLL from bin\Release\net48\ to your XRM ToolBox plugins folder" -ForegroundColor White
 Write-Host "2. Restart XRM ToolBox" -ForegroundColor White
 Write-Host "3. Look for 'Attribute Metadata Exporter' in the plugins list" -ForegroundColor White
 Write-Host ""
