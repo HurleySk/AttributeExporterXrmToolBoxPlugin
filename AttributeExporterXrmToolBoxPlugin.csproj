@@ -7,7 +7,7 @@
     <!-- Avoid duplicate attributes if you have Properties/AssemblyInfo.cs -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 
-    <!-- Required if any .resx contains non-string resources (icons, images, etc.) -->
+    <!-- If any .resx has non-string entries (icons/images), keep this true -->
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 
     <AssemblyName>AttributeExporterXrmToolBoxPlugin</AssemblyName>
@@ -36,6 +36,7 @@
     <!-- Non-string .resx support at runtime -->
     <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
 
-    <!-- Your utility -->
+    <!-- Utility -->
     <PackageReference Include="CsvHelper" Version="30.0.1" />
   </ItemGroup>
+</Project>
