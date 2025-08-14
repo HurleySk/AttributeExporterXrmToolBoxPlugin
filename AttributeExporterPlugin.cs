@@ -19,7 +19,7 @@ namespace AttributeExporterXrmToolBoxPlugin
     public class AttributeExporterPlugin : PluginBase, IGitHubPlugin
     {
         public string RepositoryName => "AttributeExporterXrmToolBoxPlugin";
-        public string UserName => "your-github-username"; 
+        public string UserName => "HurleySk"; 
 
         public override IXrmToolBoxPluginControl GetControl()
         {
