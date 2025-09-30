@@ -1,4 +1,5 @@
 using AttributeExporterXrmToolBoxPlugin.Models;
+using AttributeExporterXrmToolBoxPlugin.Services;
 using CsvHelper;
 using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk;
@@ -19,6 +20,7 @@ namespace AttributeExporterXrmToolBoxPlugin
         private List<AttributeMetadataInfo> _allAttributes;
         private List<AttributeMetadataInfo> _filteredAttributes;
         private List<Models.SolutionInfo> _solutions;
+        private ColumnConfiguration _columnConfiguration;
 
         public AttributeExporterControl()
         {
@@ -27,9 +29,9 @@ namespace AttributeExporterXrmToolBoxPlugin
             _filteredAttributes = new List<AttributeMetadataInfo>();
             _solutions = new List<Models.SolutionInfo>();
 
-            // Note: Service is not available in the constructor.
-            // Use OnConnectionUpdated event to load solutions.
-            SetupDataGridView();
+            // Load column configuration and build DataGridView columns
+            _columnConfiguration = ColumnConfigurationService.LoadConfiguration();
+            RebuildColumns(_columnConfiguration);
         }
 
         private void AttributeExporterControl_Load(object sender, EventArgs e)
@@ -98,7 +100,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             });
         }
 
-        private void SetupDataGridView()
+        private void RebuildColumns(ColumnConfiguration config)
         {
             dgvAttributes.AutoGenerateColumns = false;
             dgvAttributes.AllowUserToAddRows = false;
@@ -107,73 +109,92 @@ namespace AttributeExporterXrmToolBoxPlugin
             dgvAttributes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvAttributes.MultiSelect = true;
 
-            // Add columns
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "TableLogicalName",
-                HeaderText = "Table Logical Name",
-                DataPropertyName = "TableLogicalName",
-                FillWeight = 15
-            });
+            // Enable advanced features
+            dgvAttributes.AllowUserToOrderColumns = true;
+            dgvAttributes.ScrollBars = ScrollBars.Both;
+            dgvAttributes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "TableDisplayName",
-                HeaderText = "Table Display Name",
-                DataPropertyName = "TableDisplayName",
-                FillWeight = 15
-            });
+            // Unsubscribe from events before clearing
+            dgvAttributes.ColumnDisplayIndexChanged -= dgvAttributes_ColumnDisplayIndexChanged;
+            dgvAttributes.ColumnWidthChanged -= dgvAttributes_ColumnWidthChanged;
+            dgvAttributes.Sorted -= dgvAttributes_Sorted;
 
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "AttributeLogicalName",
-                HeaderText = "Attribute Logical Name",
-                DataPropertyName = "AttributeLogicalName",
-                FillWeight = 15
-            });
+            // Clear existing columns
+            dgvAttributes.Columns.Clear();
 
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "AttributeDisplayName",
-                HeaderText = "Attribute Display Name",
-                DataPropertyName = "AttributeDisplayName",
-                FillWeight = 15
-            });
+            // Add visible columns from configuration
+            var visibleColumns = config.Columns
+                .Where(c => c.IsVisible)
+                .OrderBy(c => c.DisplayOrder)
+                .ToList();
 
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
+            foreach (var colDef in visibleColumns)
             {
-                Name = "AttributeType",
-                HeaderText = "Attribute Type",
-                DataPropertyName = "AttributeType",
-                FillWeight = 10
-            });
+                var column = new DataGridViewTextBoxColumn
+                {
+                    Name = colDef.Name,
+                    HeaderText = colDef.DisplayName,
+                    DataPropertyName = colDef.Name,
+                    Width = colDef.Width ?? 150,
+                    SortMode = DataGridViewColumnSortMode.Automatic,
+                    ToolTipText = colDef.Description
+                };
 
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
+                dgvAttributes.Columns.Add(column);
+            }
+
+            // Subscribe to events
+            dgvAttributes.ColumnDisplayIndexChanged += dgvAttributes_ColumnDisplayIndexChanged;
+            dgvAttributes.ColumnWidthChanged += dgvAttributes_ColumnWidthChanged;
+            dgvAttributes.Sorted += dgvAttributes_Sorted;
+
+            // Restore sort state if available
+            if (!string.IsNullOrEmpty(config.LastSortColumn))
             {
-                Name = "Required",
-                HeaderText = "Required",
-                DataPropertyName = "Required",
-                FillWeight = 8
-            });
+                var sortColumn = dgvAttributes.Columns[config.LastSortColumn];
+                if (sortColumn != null && dgvAttributes.DataSource != null)
+                {
+                    dgvAttributes.Sort(sortColumn,
+                        config.LastSortAscending ? System.ComponentModel.ListSortDirection.Ascending : System.ComponentModel.ListSortDirection.Descending);
+                }
+            }
+        }
 
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
+        private void dgvAttributes_ColumnDisplayIndexChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            // Update display order in configuration based on current DisplayIndex
+            var visibleColumns = _columnConfiguration.Columns.Where(c => c.IsVisible).ToList();
+            foreach (DataGridViewColumn col in dgvAttributes.Columns)
             {
-                Name = "MaxLength",
-                HeaderText = "Max Length",
-                DataPropertyName = "MaxLength",
-                FillWeight = 10
-            });
+                var colDef = visibleColumns.FirstOrDefault(c => c.Name == col.Name);
+                if (colDef != null)
+                {
+                    colDef.DisplayOrder = col.DisplayIndex;
+                }
+            }
+            ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+        }
 
-            dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
+        private void dgvAttributes_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            // Update column width in configuration
+            var colDef = _columnConfiguration.Columns.FirstOrDefault(c => c.Name == e.Column.Name);
+            if (colDef != null)
             {
-                Name = "Description",
-                HeaderText = "Description",
-                DataPropertyName = "Description",
-                FillWeight = 22
-            });
+                colDef.Width = e.Column.Width;
+                ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+            }
+        }
 
-            // Set AutoSizeColumnsMode AFTER adding columns
-            dgvAttributes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        private void dgvAttributes_Sorted(object sender, EventArgs e)
+        {
+            // Save sort state
+            if (dgvAttributes.SortedColumn != null)
+            {
+                _columnConfiguration.LastSortColumn = dgvAttributes.SortedColumn.Name;
+                _columnConfiguration.LastSortAscending = dgvAttributes.SortOrder == SortOrder.Ascending;
+                ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+            }
         }
 
         private void rdoSelectedSolution_CheckedChanged(object sender, EventArgs e)
@@ -239,17 +260,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                             {
                                 if (attribute.IsValidForRead == true)
                                 {
-                                    attributes.Add(new AttributeMetadataInfo
-                                    {
-                                        TableLogicalName = entity.LogicalName,
-                                        TableDisplayName = entity.DisplayName?.UserLocalizedLabel?.Label ?? entity.LogicalName,
-                                        AttributeLogicalName = attribute.LogicalName,
-                                        AttributeDisplayName = attribute.DisplayName?.UserLocalizedLabel?.Label ?? attribute.LogicalName,
-                                        AttributeType = attribute.AttributeType?.ToString() ?? "Unknown",
-                                        Required = attribute.RequiredLevel?.Value == AttributeRequiredLevel.ApplicationRequired,
-                                        MaxLength = GetMaxLength(attribute),
-                                        Description = attribute.Description?.UserLocalizedLabel?.Label ?? ""
-                                    });
+                                    attributes.Add(ConvertToAttributeInfo(entity, attribute));
                                 }
                             }
                         }
@@ -321,17 +332,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                             {
                                 if (attribute.IsValidForRead == true)
                                 {
-                                    attributes.Add(new AttributeMetadataInfo
-                                    {
-                                        TableLogicalName = entity.LogicalName,
-                                        TableDisplayName = entity.DisplayName?.UserLocalizedLabel?.Label ?? entity.LogicalName,
-                                        AttributeLogicalName = attribute.LogicalName,
-                                        AttributeDisplayName = attribute.DisplayName?.UserLocalizedLabel?.Label ?? attribute.LogicalName,
-                                        AttributeType = attribute.AttributeType?.ToString() ?? "Unknown",
-                                        Required = attribute.RequiredLevel?.Value == AttributeRequiredLevel.ApplicationRequired,
-                                        MaxLength = GetMaxLength(attribute),
-                                        Description = attribute.Description?.UserLocalizedLabel?.Label ?? ""
-                                    });
+                                    attributes.Add(ConvertToAttributeInfo(entity, attribute));
                                 }
                             }
                         }
@@ -372,6 +373,56 @@ namespace AttributeExporterXrmToolBoxPlugin
             {
                 return null;
             }
+        }
+
+        private AttributeMetadataInfo ConvertToAttributeInfo(EntityMetadata entity, AttributeMetadata attribute)
+        {
+            return new AttributeMetadataInfo
+            {
+                // Core Identification
+                TableLogicalName = entity.LogicalName,
+                TableDisplayName = entity.DisplayName?.UserLocalizedLabel?.Label ?? entity.LogicalName,
+                AttributeLogicalName = attribute.LogicalName,
+                AttributeDisplayName = attribute.DisplayName?.UserLocalizedLabel?.Label ?? attribute.LogicalName,
+                SchemaName = attribute.SchemaName,
+                AttributeType = attribute.AttributeType?.ToString() ?? "Unknown",
+                AttributeTypeName = attribute.AttributeTypeName?.Value,
+
+                // Metadata Properties
+                MetadataId = attribute.MetadataId?.ToString(),
+                IntroducedVersion = attribute.IntroducedVersion,
+                IsManaged = attribute.IsManaged,
+                IsCustomAttribute = attribute.IsCustomAttribute,
+
+                // Field Characteristics
+                Required = attribute.RequiredLevel?.Value == AttributeRequiredLevel.ApplicationRequired,
+                RequiredLevel = attribute.RequiredLevel?.Value.ToString(),
+                MaxLength = GetMaxLength(attribute),
+                Description = attribute.Description?.UserLocalizedLabel?.Label ?? "",
+
+                // Identity Flags
+                IsPrimaryId = attribute.IsPrimaryId,
+                IsPrimaryName = attribute.IsPrimaryName,
+                IsLogical = attribute.IsLogical,
+                AttributeOf = attribute.AttributeOf,
+
+                // Validity Flags
+                IsValidForCreate = attribute.IsValidForCreate,
+                IsValidForRead = attribute.IsValidForRead,
+                IsValidForUpdate = attribute.IsValidForUpdate,
+
+                // Security
+                IsSecured = attribute.IsSecured,
+                CanBeSecuredForCreate = attribute.CanBeSecuredForCreate,
+                CanBeSecuredForRead = attribute.CanBeSecuredForRead,
+                CanBeSecuredForUpdate = attribute.CanBeSecuredForUpdate,
+
+                // Audit
+                IsAuditEnabled = attribute.IsAuditEnabled?.Value,
+
+                // Type-Specific Details (Smart Column)
+                TypeSpecificDetails = MetadataFormatter.GetTypeSpecificDetails(attribute)
+            };
         }
 
         private int? GetMaxLength(AttributeMetadata attribute)
@@ -452,11 +503,35 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Message = "Exporting to CSV...",
                 Work = (worker, args) =>
                 {
+                    // Get visible columns in display order
+                    var visibleColumns = _columnConfiguration.Columns
+                        .Where(c => c.IsVisible)
+                        .OrderBy(c => c.DisplayOrder)
+                        .ToList();
+
                     using (var writer = new StreamWriter(filePath))
                     using (var csv = new CsvWriter(writer))
                     {
                         csv.Configuration.CultureInfo = System.Globalization.CultureInfo.InvariantCulture;
-                        csv.WriteRecords(_filteredAttributes);
+
+                        // Write headers
+                        foreach (var col in visibleColumns)
+                        {
+                            csv.WriteField(col.DisplayName);
+                        }
+                        csv.NextRecord();
+
+                        // Write data rows
+                        foreach (var attr in _filteredAttributes)
+                        {
+                            foreach (var col in visibleColumns)
+                            {
+                                var propInfo = typeof(AttributeMetadataInfo).GetProperty(col.Name);
+                                var value = propInfo?.GetValue(attr);
+                                csv.WriteField(value?.ToString() ?? "");
+                            }
+                            csv.NextRecord();
+                        }
                     }
                     args.Result = filePath;
                 },
@@ -472,6 +547,20 @@ namespace AttributeExporterXrmToolBoxPlugin
                         "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             });
+        }
+
+        private void btnColumns_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new Forms.ColumnConfigurationDialog(_columnConfiguration))
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    _columnConfiguration = dialog.Configuration;
+                    ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+                    RebuildColumns(_columnConfiguration);
+                    RefreshGrid();
+                }
+            }
         }
 
         private void btnClose_Click(object sender, EventArgs e)

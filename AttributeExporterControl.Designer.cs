@@ -206,6 +206,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpActions.Controls.Add(this.btnClose);
+            this.grpActions.Controls.Add(this.btnColumns);
             this.grpActions.Controls.Add(this.btnExport);
             this.grpActions.Location = new System.Drawing.Point(12, 504);
             this.grpActions.Name = "grpActions";
@@ -224,9 +225,20 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
+            //
+            // btnColumns
+            //
+            this.btnColumns.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnColumns.Location = new System.Drawing.Point(630, 20);
+            this.btnColumns.Name = "btnColumns";
+            this.btnColumns.Size = new System.Drawing.Size(100, 30);
+            this.btnColumns.TabIndex = 2;
+            this.btnColumns.Text = "Columns...";
+            this.btnColumns.UseVisualStyleBackColor = true;
+            this.btnColumns.Click += new System.EventHandler(this.btnColumns_Click);
+            //
             // btnExport
-            // 
+            //
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExport.Enabled = false;
             this.btnExport.Location = new System.Drawing.Point(740, 20);
@@ -274,6 +286,7 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.DataGridView dgvAttributes;
         private System.Windows.Forms.GroupBox grpActions;
         private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Button btnColumns;
         private System.Windows.Forms.Button btnExport;
     }
 }
