@@ -17,14 +17,16 @@ namespace AttributeExporterXrmToolBoxPlugin
     public partial class AttributeExporterControl : PluginControlBase
     {
         private List<AttributeMetadataInfo> _allAttributes;
+        private List<AttributeMetadataInfo> _filteredAttributes;
         private List<Models.SolutionInfo> _solutions;
 
         public AttributeExporterControl()
         {
             InitializeComponent();
             _allAttributes = new List<AttributeMetadataInfo>();
+            _filteredAttributes = new List<AttributeMetadataInfo>();
             _solutions = new List<Models.SolutionInfo>();
-            
+
             // Note: Service is not available in the constructor.
             // Use OnConnectionUpdated event to load solutions.
             SetupDataGridView();
@@ -111,7 +113,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "TableLogicalName",
                 HeaderText = "Table Logical Name",
                 DataPropertyName = "TableLogicalName",
-                Width = 150
+                FillWeight = 15
             });
 
             dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
@@ -119,7 +121,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "TableDisplayName",
                 HeaderText = "Table Display Name",
                 DataPropertyName = "TableDisplayName",
-                Width = 150
+                FillWeight = 15
             });
 
             dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
@@ -127,7 +129,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "AttributeLogicalName",
                 HeaderText = "Attribute Logical Name",
                 DataPropertyName = "AttributeLogicalName",
-                Width = 150
+                FillWeight = 15
             });
 
             dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
@@ -135,7 +137,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "AttributeDisplayName",
                 HeaderText = "Attribute Display Name",
                 DataPropertyName = "AttributeDisplayName",
-                Width = 150
+                FillWeight = 15
             });
 
             dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
@@ -143,7 +145,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "AttributeType",
                 HeaderText = "Attribute Type",
                 DataPropertyName = "AttributeType",
-                Width = 100
+                FillWeight = 10
             });
 
             dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
@@ -151,7 +153,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "Required",
                 HeaderText = "Required",
                 DataPropertyName = "Required",
-                Width = 80
+                FillWeight = 8
             });
 
             dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
@@ -159,7 +161,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "MaxLength",
                 HeaderText = "Max Length",
                 DataPropertyName = "MaxLength",
-                Width = 100
+                FillWeight = 10
             });
 
             dgvAttributes.Columns.Add(new DataGridViewTextBoxColumn
@@ -167,21 +169,114 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Name = "Description",
                 HeaderText = "Description",
                 DataPropertyName = "Description",
-                Width = 200
+                FillWeight = 22
             });
+
+            // Set AutoSizeColumnsMode AFTER adding columns
+            dgvAttributes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+
+        private void rdoSelectedSolution_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdoSelectedSolution.Checked)
+            {
+                lblSolution.Enabled = true;
+                cboSolutions.Enabled = true;
+            }
+        }
+
+        private void rdoAllEntities_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdoAllEntities.Checked)
+            {
+                lblSolution.Enabled = false;
+                cboSolutions.Enabled = false;
+                cboSolutions.SelectedIndex = -1; // Clear selection
+            }
         }
 
         private void btnLoadAttributes_Click(object sender, EventArgs e)
         {
-            if (cboSolutions.SelectedItem == null)
+            if (rdoAllEntities.Checked)
             {
-                MessageBox.Show("Please select a solution first.", "Selection Required",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
+                LoadAllEntities();
             }
+            else if (rdoSelectedSolution.Checked)
+            {
+                if (cboSolutions.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select a solution first.", "Selection Required",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
 
-            var selectedSolution = (Models.SolutionInfo)cboSolutions.SelectedItem;
-            LoadAttributesForSolution(selectedSolution);
+                var selectedSolution = (Models.SolutionInfo)cboSolutions.SelectedItem;
+                LoadAttributesForSolution(selectedSolution);
+            }
+        }
+
+        private void LoadAllEntities()
+        {
+            WorkAsync(new WorkAsyncInfo
+            {
+                Message = "Loading all entities and attributes...",
+                Work = (worker, args) =>
+                {
+                    var retrieveAllEntitiesRequest = new RetrieveAllEntitiesRequest
+                    {
+                        EntityFilters = EntityFilters.Attributes,
+                        RetrieveAsIfPublished = true
+                    };
+
+                    var retrieveAllEntitiesResponse = (RetrieveAllEntitiesResponse)Service.Execute(retrieveAllEntitiesRequest);
+                    var attributes = new List<AttributeMetadataInfo>();
+
+                    foreach (var entity in retrieveAllEntitiesResponse.EntityMetadata)
+                    {
+                        try
+                        {
+                            foreach (var attribute in entity.Attributes)
+                            {
+                                if (attribute.IsValidForRead == true)
+                                {
+                                    attributes.Add(new AttributeMetadataInfo
+                                    {
+                                        TableLogicalName = entity.LogicalName,
+                                        TableDisplayName = entity.DisplayName?.UserLocalizedLabel?.Label ?? entity.LogicalName,
+                                        AttributeLogicalName = attribute.LogicalName,
+                                        AttributeDisplayName = attribute.DisplayName?.UserLocalizedLabel?.Label ?? attribute.LogicalName,
+                                        AttributeType = attribute.AttributeType?.ToString() ?? "Unknown",
+                                        Required = attribute.RequiredLevel?.Value == AttributeRequiredLevel.ApplicationRequired,
+                                        MaxLength = GetMaxLength(attribute),
+                                        Description = attribute.Description?.UserLocalizedLabel?.Label ?? ""
+                                    });
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log error but continue
+                            Console.WriteLine($"Error processing entity {entity.LogicalName}: {ex.Message}");
+                        }
+                    }
+                    args.Result = attributes;
+                },
+                PostWorkCallBack = (args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        MessageBox.Show($"Error loading attributes: {args.Error.Message}", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    _allAttributes = (List<AttributeMetadataInfo>)args.Result;
+                    _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
+                    RefreshGrid();
+
+                    MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from all entities",
+                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            });
         }
 
         private void LoadAttributesForSolution(Models.SolutionInfo solution)
@@ -257,10 +352,8 @@ namespace AttributeExporterXrmToolBoxPlugin
                         return;
                     }
                     _allAttributes = (List<AttributeMetadataInfo>)args.Result;
-                    dgvAttributes.DataSource = null; // Unbind first
-                    dgvAttributes.DataSource = _allAttributes;
-                    lblAttributeCount.Text = $"Total Attributes: {_allAttributes.Count}";
-                    btnExport.Enabled = _allAttributes.Count > 0;
+                    _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
+                    RefreshGrid();
 
                     MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from solution '{solution.Name}'",
                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -315,6 +408,43 @@ namespace AttributeExporterXrmToolBoxPlugin
             }
         }
 
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void ApplyFilter()
+        {
+            var searchText = txtSearch.Text.Trim().ToLower();
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
+            }
+            else
+            {
+                _filteredAttributes = _allAttributes.Where(a =>
+                    (a.TableLogicalName?.ToLower().Contains(searchText) ?? false) ||
+                    (a.TableDisplayName?.ToLower().Contains(searchText) ?? false) ||
+                    (a.AttributeLogicalName?.ToLower().Contains(searchText) ?? false) ||
+                    (a.AttributeDisplayName?.ToLower().Contains(searchText) ?? false) ||
+                    (a.AttributeType?.ToLower().Contains(searchText) ?? false) ||
+                    (a.Description?.ToLower().Contains(searchText) ?? false)
+                ).ToList();
+            }
+
+            RefreshGrid();
+        }
+
+        private void RefreshGrid()
+        {
+            dgvAttributes.DataSource = null;
+            dgvAttributes.DataSource = _filteredAttributes;
+            lblAttributeCount.Text = $"Total Attributes: {_allAttributes.Count}";
+            lblFilterStatus.Text = $"Showing {_filteredAttributes.Count} of {_allAttributes.Count} attributes";
+            btnExport.Enabled = _filteredAttributes.Count > 0;
+        }
+
         private void ExportToCsv(string filePath)
         {
             WorkAsync(new WorkAsyncInfo
@@ -326,7 +456,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                     using (var csv = new CsvWriter(writer))
                     {
                         csv.Configuration.CultureInfo = System.Globalization.CultureInfo.InvariantCulture;
-                        csv.WriteRecords(_allAttributes);
+                        csv.WriteRecords(_filteredAttributes);
                     }
                     args.Result = filePath;
                 },
@@ -338,7 +468,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    MessageBox.Show($"Successfully exported {_allAttributes.Count} attributes to:\n{args.Result}",
+                    MessageBox.Show($"Successfully exported {_filteredAttributes.Count} attributes to:\n{args.Result}",
                         "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             });

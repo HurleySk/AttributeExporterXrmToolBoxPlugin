@@ -88,9 +88,9 @@ foreach ($file in $deployedFiles) {
     $filePath = Join-Path $pluginsPath $file
     if (Test-Path $filePath) {
         $fileInfo = Get-Item $filePath
-        Write-Host "  ✓ $file ($([math]::Round($fileInfo.Length / 1KB, 0)) KB)" -ForegroundColor Green
+        Write-Host "  [OK] $file ($([math]::Round($fileInfo.Length / 1KB, 0)) KB)" -ForegroundColor Green
     } else {
-        Write-Host "  ✗ $file (MISSING)" -ForegroundColor Red
+        Write-Host "  [MISSING] $file" -ForegroundColor Red
         $allFilesPresent = $false
     }
 }
@@ -99,7 +99,7 @@ foreach ($file in $deployedFiles) {
 Write-Host "`n=== Deployment Summary ===" -ForegroundColor Cyan
 if ($allFilesPresent) {
     Write-Host "Status: " -NoNewline
-    Write-Host "SUCCESS ✓" -ForegroundColor Green
+    Write-Host "SUCCESS" -ForegroundColor Green
     Write-Host "`nPlugin deployed to: $pluginsPath" -ForegroundColor White
     Write-Host "`nNext steps:" -ForegroundColor Yellow
     Write-Host "  1. Close XRM ToolBox completely (check Task Manager)" -ForegroundColor White
@@ -107,7 +107,7 @@ if ($allFilesPresent) {
     Write-Host "  3. Look for 'Attribute Metadata Exporter' in Tools menu" -ForegroundColor White
 } else {
     Write-Host "Status: " -NoNewline
-    Write-Host "FAILED ✗" -ForegroundColor Red
+    Write-Host "FAILED" -ForegroundColor Red
     Write-Host "Some files are missing. Check errors above." -ForegroundColor Red
     exit 1
 }
