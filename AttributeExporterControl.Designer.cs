@@ -32,6 +32,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.btnLoadAttributes = new System.Windows.Forms.Button();
             this.rdoAllEntities = new System.Windows.Forms.RadioButton();
             this.rdoSelectedSolution = new System.Windows.Forms.RadioButton();
+            this.lblScope = new System.Windows.Forms.Label();
             this.lblSolution = new System.Windows.Forms.Label();
             this.cboSolutions = new System.Windows.Forms.ComboBox();
             this.grpAttributes = new System.Windows.Forms.GroupBox();
@@ -56,6 +57,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpSolution.Controls.Add(this.btnLoadAttributes);
             this.grpSolution.Controls.Add(this.rdoAllEntities);
             this.grpSolution.Controls.Add(this.rdoSelectedSolution);
+            this.grpSolution.Controls.Add(this.lblScope);
             this.grpSolution.Controls.Add(this.lblSolution);
             this.grpSolution.Controls.Add(this.cboSolutions);
             this.grpSolution.Location = new System.Drawing.Point(12, 12);
@@ -79,10 +81,11 @@ namespace AttributeExporterXrmToolBoxPlugin
             // rdoAllEntities
             //
             this.rdoAllEntities.AutoSize = true;
-            this.rdoAllEntities.Location = new System.Drawing.Point(200, 25);
+            this.rdoAllEntities.Location = new System.Drawing.Point(240, 25);
             this.rdoAllEntities.Name = "rdoAllEntities";
             this.rdoAllEntities.Size = new System.Drawing.Size(80, 17);
-            this.rdoAllEntities.TabIndex = 1;
+            this.rdoAllEntities.TabIndex = 2;
+            this.rdoAllEntities.TabStop = true;
             this.rdoAllEntities.Text = "All Entities";
             this.rdoAllEntities.UseVisualStyleBackColor = true;
             this.rdoAllEntities.CheckedChanged += new System.EventHandler(this.rdoAllEntities_CheckedChanged);
@@ -94,19 +97,28 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.rdoSelectedSolution.Location = new System.Drawing.Point(80, 25);
             this.rdoSelectedSolution.Name = "rdoSelectedSolution";
             this.rdoSelectedSolution.Size = new System.Drawing.Size(115, 17);
-            this.rdoSelectedSolution.TabIndex = 0;
+            this.rdoSelectedSolution.TabIndex = 1;
             this.rdoSelectedSolution.TabStop = true;
             this.rdoSelectedSolution.Text = "Selected Solution";
             this.rdoSelectedSolution.UseVisualStyleBackColor = true;
             this.rdoSelectedSolution.CheckedChanged += new System.EventHandler(this.rdoSelectedSolution_CheckedChanged);
             //
+            // lblScope
+            //
+            this.lblScope.AutoSize = true;
+            this.lblScope.Location = new System.Drawing.Point(20, 27);
+            this.lblScope.Name = "lblScope";
+            this.lblScope.Size = new System.Drawing.Size(42, 13);
+            this.lblScope.TabIndex = 0;
+            this.lblScope.Text = "Scope:";
+            //
             // lblSolution
             //
             this.lblSolution.AutoSize = true;
-            this.lblSolution.Location = new System.Drawing.Point(20, 55);
+            this.lblSolution.Location = new System.Drawing.Point(20, 60);
             this.lblSolution.Name = "lblSolution";
             this.lblSolution.Size = new System.Drawing.Size(51, 13);
-            this.lblSolution.TabIndex = 2;
+            this.lblSolution.TabIndex = 3;
             this.lblSolution.Text = "Solution:";
             //
             // cboSolutions
@@ -115,10 +127,10 @@ namespace AttributeExporterXrmToolBoxPlugin
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cboSolutions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboSolutions.FormattingEnabled = true;
-            this.cboSolutions.Location = new System.Drawing.Point(80, 52);
+            this.cboSolutions.Location = new System.Drawing.Point(80, 57);
             this.cboSolutions.Name = "cboSolutions";
             this.cboSolutions.Size = new System.Drawing.Size(640, 21);
-            this.cboSolutions.TabIndex = 3;
+            this.cboSolutions.TabIndex = 4;
             // 
             // grpAttributes
             //
@@ -251,6 +263,7 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.Button btnLoadAttributes;
         private System.Windows.Forms.RadioButton rdoAllEntities;
         private System.Windows.Forms.RadioButton rdoSelectedSolution;
+        private System.Windows.Forms.Label lblScope;
         private System.Windows.Forms.Label lblSolution;
         private System.Windows.Forms.ComboBox cboSolutions;
         private System.Windows.Forms.GroupBox grpAttributes;
