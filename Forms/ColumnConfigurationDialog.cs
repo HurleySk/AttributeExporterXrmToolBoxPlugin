@@ -63,6 +63,7 @@ namespace AttributeExporterXrmToolBoxPlugin.Forms
         private void LoadColumnList()
         {
             lstColumns.Items.Clear();
+            lstColumns.DisplayMember = "DisplayName";
 
             var groupedColumns = _configuration.Columns
                 .OrderBy(c => c.Category)
