@@ -38,7 +38,7 @@
     <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
 
     <!-- Utility -->
-    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="CsvHelper" Version="12.3.2" />
 
     <!-- Fody for embedding dependencies -->
     <PackageReference Include="Fody" Version="6.8.2" PrivateAssets="all" />

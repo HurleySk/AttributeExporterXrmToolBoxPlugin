@@ -1,192 +1,167 @@
-AttributeExporterXrmToolBoxPlugin.sln
-obj/AttributeExporterXrmToolBoxPlugin.csproj.nuget.dgspec.json
-obj/AttributeExporterXrmToolBoxPlugin.csproj.nuget.g.props
-obj/AttributeExporterXrmToolBoxPlugin.csproj.nuget.g.targets
-obj/project.assets.json
-obj/project.nuget.cache
-obj/Debug/net6.0-windows/.NETCoreApp,Version=v6.0.AssemblyAttributes.cs
-obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.AssemblyInfo.cs
-obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.AssemblyInfoInputs.cache
-obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.assets.cache
-obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.csproj.AssemblyReference.cache
-obj/Debug/net6.0-windows/AttributeExporterXrmToolBoxPlugin.GeneratedMSBuildEditorConfig.editorconfig
-obj/Debug/net48/.NETFramework,Version=v4.8.AssemblyAttributes.cs
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.AssemblyInfo.cs
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.AssemblyInfoInputs.cache
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.assets.cache
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.csproj.AssemblyReference.cache
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.csproj.FileListAbsolute.txt
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.csproj.GenerateResource.cache
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.GeneratedMSBuildEditorConfig.editorconfig
-bin/Release/net48/AttributeExporterXrmToolBoxPlugin.dll
-bin/Release/net48/AttributeExporterXrmToolBoxPlugin.pdb
-bin/Release/net48/CsvHelper.dll
-bin/Release/net48/McTools.Xrm.Connection.dll
-bin/Release/net48/McTools.Xrm.Connection.WinForms.dll
-bin/Release/net48/Microsoft.Bcl.AsyncInterfaces.dll
-bin/Release/net48/Microsoft.Bcl.HashCode.dll
-bin/Release/net48/Microsoft.Crm.Sdk.Proxy.dll
-bin/Release/net48/Microsoft.Extensions.AI.Abstractions.dll
-bin/Release/net48/Microsoft.Extensions.AI.dll
-bin/Release/net48/Microsoft.Extensions.Caching.Abstractions.dll
-bin/Release/net48/Microsoft.Extensions.DependencyInjection.Abstractions.dll
-bin/Release/net48/Microsoft.Extensions.Logging.Abstractions.dll
-bin/Release/net48/Microsoft.Extensions.Primitives.dll
-bin/Release/net48/Microsoft.IdentityModel.Clients.ActiveDirectory.dll
-bin/Release/net48/Microsoft.Rest.ClientRuntime.dll
-bin/Release/net48/Microsoft.Web.WebView2.Core.dll
-bin/Release/net48/Microsoft.Web.WebView2.WinForms.dll
-bin/Release/net48/Microsoft.Web.WebView2.Wpf.dll
-bin/Release/net48/Microsoft.Xrm.Sdk.Deployment.dll
-bin/Release/net48/Microsoft.Xrm.Sdk.dll
-bin/Release/net48/Microsoft.Xrm.Sdk.Workflow.dll
-bin/Release/net48/Microsoft.Xrm.Tooling.Connector.dll
-bin/Release/net48/Microsoft.Xrm.Tooling.CrmConnectControl.dll
-bin/Release/net48/Microsoft.Xrm.Tooling.Ui.Styles.dll
-bin/Release/net48/Microsoft.Xrm.Tooling.WebResourceUtility.dll
-bin/Release/net48/Newtonsoft.Json.dll
-bin/Release/net48/ScintillaNET.dll
-bin/Release/net48/System.Buffers.dll
-bin/Release/net48/System.Diagnostics.DiagnosticSource.dll
-bin/Release/net48/System.Memory.dll
-bin/Release/net48/System.Numerics.Vectors.dll
-bin/Release/net48/System.Resources.Extensions.dll
-bin/Release/net48/System.Runtime.CompilerServices.Unsafe.dll
-bin/Release/net48/System.ServiceModel.Http.dll
-bin/Release/net48/System.ServiceModel.Primitives.dll
-bin/Release/net48/System.Text.Encodings.Web.dll
-bin/Release/net48/System.Text.Json.dll
-bin/Release/net48/System.Threading.Channels.dll
-bin/Release/net48/System.Threading.Tasks.Extensions.dll
-bin/Release/net48/System.ValueTuple.dll
-bin/Release/net48/WeifenLuo.WinFormsUI.Docking.dll
-bin/Release/net48/WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll
-bin/Release/net48/XrmToolBox.exe
-bin/Release/net48/XrmToolBox.Extensibility.dll
-bin/Release/net48/XrmToolBox.ToolLibrary.dll
-bin/Release/net48/runtimes/win-arm64/native/WebView2Loader.dll
-bin/Release/net48/runtimes/win-x64/native/WebView2Loader.dll
-bin/Release/net48/runtimes/win-x86/native/WebView2Loader.dll
-obj/Release/net48/.NETFramework,Version=v4.8.AssemblyAttributes.cs
-obj/Release/net48/Attribut.89F86710.Up2Date
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.assets.cache
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.csproj.AssemblyReference.cache
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.csproj.CoreCompileInputs.cache
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.csproj.FileListAbsolute.txt
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.csproj.GenerateResource.cache
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.dll
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.GeneratedMSBuildEditorConfig.editorconfig
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.pdb
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.Properties.Resources.resources
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.sourcelink.json
-bin/Debug/net48/AttributeExporterXrmToolBoxPlugin.dll
-bin/Debug/net48/AttributeExporterXrmToolBoxPlugin.pdb
-bin/Debug/net48/CsvHelper.dll
-bin/Debug/net48/McTools.Xrm.Connection.dll
-bin/Debug/net48/McTools.Xrm.Connection.WinForms.dll
-bin/Debug/net48/Microsoft.Bcl.AsyncInterfaces.dll
-bin/Debug/net48/Microsoft.Bcl.HashCode.dll
-bin/Debug/net48/Microsoft.Crm.Sdk.Proxy.dll
-bin/Debug/net48/Microsoft.Extensions.AI.Abstractions.dll
-bin/Debug/net48/Microsoft.Extensions.AI.dll
-bin/Debug/net48/Microsoft.Extensions.Caching.Abstractions.dll
-bin/Debug/net48/Microsoft.Extensions.DependencyInjection.Abstractions.dll
-bin/Debug/net48/Microsoft.Extensions.Logging.Abstractions.dll
-bin/Debug/net48/Microsoft.Extensions.Primitives.dll
-bin/Debug/net48/Microsoft.IdentityModel.Clients.ActiveDirectory.dll
-bin/Debug/net48/Microsoft.Rest.ClientRuntime.dll
-bin/Debug/net48/Microsoft.Web.WebView2.Core.dll
-bin/Debug/net48/Microsoft.Web.WebView2.WinForms.dll
-bin/Debug/net48/Microsoft.Web.WebView2.Wpf.dll
-bin/Debug/net48/Microsoft.Xrm.Sdk.Deployment.dll
-bin/Debug/net48/Microsoft.Xrm.Sdk.dll
-bin/Debug/net48/Microsoft.Xrm.Sdk.Workflow.dll
-bin/Debug/net48/Microsoft.Xrm.Tooling.Connector.dll
-bin/Debug/net48/Microsoft.Xrm.Tooling.CrmConnectControl.dll
-bin/Debug/net48/Microsoft.Xrm.Tooling.Ui.Styles.dll
-bin/Debug/net48/Microsoft.Xrm.Tooling.WebResourceUtility.dll
-bin/Debug/net48/Newtonsoft.Json.dll
-bin/Debug/net48/ScintillaNET.dll
-bin/Debug/net48/System.Buffers.dll
-bin/Debug/net48/System.Diagnostics.DiagnosticSource.dll
-bin/Debug/net48/System.Memory.dll
-bin/Debug/net48/System.Numerics.Vectors.dll
-bin/Debug/net48/System.Resources.Extensions.dll
-bin/Debug/net48/System.Runtime.CompilerServices.Unsafe.dll
-bin/Debug/net48/System.ServiceModel.Http.dll
-bin/Debug/net48/System.ServiceModel.Primitives.dll
-bin/Debug/net48/System.Text.Encodings.Web.dll
-bin/Debug/net48/System.Text.Json.dll
-bin/Debug/net48/System.Threading.Channels.dll
-bin/Debug/net48/System.Threading.Tasks.Extensions.dll
-bin/Debug/net48/System.ValueTuple.dll
-bin/Debug/net48/WeifenLuo.WinFormsUI.Docking.dll
-bin/Debug/net48/WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll
-bin/Debug/net48/XrmToolBox.exe
-bin/Debug/net48/XrmToolBox.Extensibility.dll
-bin/Debug/net48/XrmToolBox.ToolLibrary.dll
-bin/Debug/net48/runtimes/win-arm64/native/WebView2Loader.dll
-bin/Debug/net48/runtimes/win-x64/native/WebView2Loader.dll
-bin/Debug/net48/runtimes/win-x86/native/WebView2Loader.dll
-obj/Debug/net48/Attribut.89F86710.Up2Date
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.csproj.CoreCompileInputs.cache
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.dll
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.pdb
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.Properties.Resources.resources
-obj/Debug/net48/AttributeExporterXrmToolBoxPlugin.sourcelink.json
-bin/Release/net48/Microsoft.Build.Framework.dll
-bin/Release/net48/Microsoft.Build.Utilities.Core.dll
-bin/Release/net48/Microsoft.VisualStudio.Setup.Configuration.Interop.dll
-bin/Release/net48/System.Collections.Immutable.dll
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.csproj.Fody.CopyLocal.cache
-obj/Release/net48/Costura/0DD2FAC713015D0E5755505B226BFA461B3F6E50.costura.mctools.xrm.connection.winforms.dll.compressed.compressed
-obj/Release/net48/Costura/1BC284280AF11C299EA48F7FB35C3474A33217E6.costura.system.servicemodel.primitives.dll.compressed.compressed
-obj/Release/net48/Costura/2F410A0396BC148ED533AD49B6415FB58DD4D641.costura.system.buffers.dll.compressed.compressed
-obj/Release/net48/Costura/3B5F8D2075FF52D28E0577EA77D0C973324438CF.costura.microsoft.extensions.ai.abstractions.dll.compressed.compressed
-obj/Release/net48/Costura/3C5C5DF5F8F8DB3F0A35C5ED8D357313A54E3CDE.costura.system.memory.dll.compressed.compressed
-obj/Release/net48/Costura/3D216458740AD5CB05BC5F7C3491CDE44A1E5DF0.costura.system.numerics.vectors.dll.compressed.compressed
-obj/Release/net48/Costura/5AD0F15CA8339A55C6CFA7F8866C654BA8DA13DC.costura.weifenluo.winformsui.docking.dll.compressed.compressed
-obj/Release/net48/Costura/6BC02D4660BEB49E493679FB636718BEE7DC6E29.costura.microsoft.extensions.caching.abstractions.dll.compressed.compressed
-obj/Release/net48/Costura/6C6000A5EAF8579850AB82A89BD6268776EB51AD.costura.costura.pdb.compressed.compressed
-obj/Release/net48/Costura/7C54CACED8DA2E286AB5ED547F4E021B502F4A30.costura.xrmtoolbox.toollibrary.dll.compressed.compressed
-obj/Release/net48/Costura/7D0AD03FBDA1C24F883116B940717E596073AE96.costura.newtonsoft.json.dll.compressed.compressed
-obj/Release/net48/Costura/9E47F7C8EDED6AF776DC9B9334E41F6A3C5886F5.costura.microsoft.identitymodel.clients.activedirectory.dll.compressed.compressed
-obj/Release/net48/Costura/15F554261B3F9EEC9C50B3F30AE659E5284AC70E.costura.microsoft.xrm.sdk.dll.compressed.compressed
-obj/Release/net48/Costura/17AF244A2AF906A6027FAD91274C40DFBB51DDC6.costura.microsoft.extensions.ai.dll.compressed.compressed
-obj/Release/net48/Costura/035DEA7DE618E4F444CC693ADC66F3A77A56200F.costura.microsoft.xrm.tooling.connector.dll.compressed.compressed
-obj/Release/net48/Costura/55DDFBE80762C02F9A9C65809F9EC3EF8F7F2CCC.costura.system.text.encodings.web.dll.compressed.compressed
-obj/Release/net48/Costura/74DC07A8CCCEE0CA3BF5CF64320230CA1A37AD85.costura.microsoft.bcl.asyncinterfaces.dll.compressed.compressed
-obj/Release/net48/Costura/0130ADB3AACE264F870B46A788C91E35A96BC261.costura.microsoft.crm.sdk.proxy.dll.compressed.compressed
-obj/Release/net48/Costura/168D018D5576914E7C4068543297CF7F173FFFC9.costura.system.text.json.dll.compressed.compressed
-obj/Release/net48/Costura/180A7BAAFBC820A838BBACA434032D9D33CCEEBE.costura.system.runtime.compilerservices.unsafe.dll.compressed.compressed
-obj/Release/net48/Costura/245A292C2F6711181E2B32FE3E04B5A26CB7A678.costura.microsoft.web.webview2.winforms.dll.compressed.compressed
-obj/Release/net48/Costura/0257CD02B1CEA80F299CFEC1FB34DD742A3976D6.costura.xrmtoolbox.exe.compressed.compressed
-obj/Release/net48/Costura/556A80707773B2370EB1845A613FE9EF6D3AE160.costura.microsoft.xrm.tooling.webresourceutility.dll.compressed.compressed
-obj/Release/net48/Costura/708B2DEDA0B959C72D4B18F64E477BACD979BBE1.costura.system.diagnostics.diagnosticsource.dll.compressed.compressed
-obj/Release/net48/Costura/792A6745D811AB80299AE8CDCE06DE04C992AEC4.costura.weifenluo.winformsui.docking.themevs2015.dll.compressed.compressed
-obj/Release/net48/Costura/5614F3CD37F391369BD134A706AA81144655983B.costura.microsoft.rest.clientruntime.dll.compressed.compressed
-obj/Release/net48/Costura/048041FFC26BF3EE228E5900E7701DD250C3B6AB.costura.microsoft.extensions.primitives.dll.compressed.compressed
-obj/Release/net48/Costura/73595F03C564DCCA093FDEDD76E9B610065A1CB4.costura.system.resources.extensions.dll.compressed.compressed
-obj/Release/net48/Costura/342767EEAB0DF65546EE0A641BAE7037D9F77D99.costura.csvhelper.dll.compressed.compressed
-obj/Release/net48/Costura/6355619DF282079865DFA3CE1C04675DAC7B7916.costura.xrmtoolbox.extensibility.dll.compressed.compressed
-obj/Release/net48/Costura/2242627282F9E07E37B274EA36FAC2D3CD9C9110.costura.system.threading.tasks.extensions.dll.compressed.compressed
-obj/Release/net48/Costura/05117383829C05DDD56B26676FEC43DF5250E473.costura.microsoft.xrm.tooling.ui.styles.dll.compressed.compressed
-obj/Release/net48/Costura/A728B35474AD16F4EC98DA75E33951022C750CC1.costura.microsoft.xrm.sdk.deployment.dll.compressed.compressed
-obj/Release/net48/Costura/B2E23291019C6F0C58198BACA06F9596B810A308.costura.system.servicemodel.primitives.pdb.compressed.compressed
-obj/Release/net48/Costura/B318EE8589C7C58454FD9BB74069ECC3FFE8E30D.costura.microsoft.web.webview2.wpf.dll.compressed.compressed
-obj/Release/net48/Costura/B21001C8614C9FB82B0CF98200246530413DC221.costura.system.threading.channels.dll.compressed.compressed
-obj/Release/net48/Costura/B4620180D2F9B499188B2219775A9E53562076F7.costura.system.servicemodel.http.pdb.compressed.compressed
-obj/Release/net48/Costura/BE912DF83F49EADD957EA17A0E72467A941C5BC2.costura.microsoft.extensions.dependencyinjection.abstractions.dll.compressed.compressed
-obj/Release/net48/Costura/D8172A509ED6D7BA1265CE941800228FB8531D91.costura.microsoft.web.webview2.core.dll.compressed.compressed
-obj/Release/net48/Costura/D9377DD8C48BE15656C42B2A089202D64D945E54.costura.system.servicemodel.http.dll.compressed.compressed
-obj/Release/net48/Costura/D1664731719E85AAD7A2273685D77FEB0204EC98.costura.system.valuetuple.dll.compressed.compressed
-obj/Release/net48/Costura/DC1891E3B5B8AAF61F93BEA44FAA5E5FCB3FE631.costura.microsoft.xrm.tooling.crmconnectcontrol.dll.compressed.compressed
-obj/Release/net48/Costura/E938DCA7F045DC35B394DF2BCB020323A7F0837D.costura.microsoft.extensions.logging.abstractions.dll.compressed.compressed
-obj/Release/net48/Costura/F0CD8253B7E64157D39A8DC5FEB8CF7BDA7E8DAE.costura.scintillanet.dll.compressed.compressed
-obj/Release/net48/Costura/F1F25C01F6ACF33BDD62C4F82D3EF078E76F0906.costura.costura.dll.compressed.compressed
-obj/Release/net48/Costura/F35A9CA4C1A48A23C13A353FC530EB4EE509D552.costura.mctools.xrm.connection.dll.compressed.compressed
-obj/Release/net48/Costura/F24399B09AA836A17C9E73EB1882DB00415F550E.costura.microsoft.xrm.sdk.workflow.dll.compressed.compressed
-obj/Release/net48/Costura/FA6D78B393413D007CC154F4C9FE7400BF2DCDBF.costura.microsoft.bcl.hashcode.dll.compressed.compressed
-obj/Release/net48/AttributeExporterXrmToolBoxPlugin.csproj.Fody.RuntimeCopyLocal.cache
-obj/Release/net48/Costura/028E9832F421F11F9497C610F1734E0F3D868037.costura.costura.dll.compressed.compressed
-obj/Release/net48/Costura/806F4C19B2D7FD9E3B836269EC07647019A29E95.costura.costura.pdb.compressed.compressed
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2015/2017/2019/2022 cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files
+*.rsuser
+
+# Build results files
+*.dll.config
+App.config
+*.exe.config
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+
+# Visual Studio cache files
+*.cache
+.nuget/
+
+# MSTest test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual Studio Trace Files
+*.e2e
+
+# TFS 2012 Local Workspace
+$tf/
+
+# Guidance Automation Toolkit
+*.gpState
+
+# ReSharper is a .NET coding add-in
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Click-Once directory
+publish/
+
+# Publish Web Output
+*.[Pp]ublish.xml
+*.azurePubxml
+
+# NuGet Symbol Packages
+*.snupkg
+**/[Pp]ackages/*
+# Except build/, which is used as an MSBuild target.
+!**/[Pp]ackages/build/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac desktop service store files
+.DS_Store
+
+# Claude Code config (user-specific)
+.claude/
+
+# VS Code
+.vscode/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# JetBrains Rider
+*.sln.iml
+
+# CodeRush personal settings
+.cr/personal
+
+# Python Tools for Visual Studio (PTVS)
+__pycache__/
+*.pyc
+
+# Cake - Uncomment if you are using it
+# tools/**
+# !tools/packages.config
+
+# Telerik's JustMock configuration file
+*.jmconfig
+
+# BizTalk build output
+*.btp.cs
+*.btm.cs
+*.odx.cs
+*.xsd.cs
+
+# OpenCover UI analysis results
+OpenCover/
+
+# Azure Stream Analytics local run output
+ASALocalRun/
+
+# MSBuild Binary and Structured Log
+*.binlog
+
+# NVidia Nsight GPU debugger configuration file
+*.nvuser
+
+# MFractors (Xamarin productivity tool) working folder
+.mfractor/
+
+# Local History for Visual Studio
+.localhistory/
+
+# BeatPulse healthcheck temp db
+healthchecksdb
+
+# Backup folder for Package Reference Convert tool in Visual Studio 2017
+MigrationBackup/
+
+# Ionide (cross platform F# VS Code tools) working folder
+.ionide/
+
+# Fody - when Costura is disabled, no need for compressed files
+Costura/

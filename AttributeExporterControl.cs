@@ -323,8 +323,9 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Work = (worker, args) =>
                 {
                     using (var writer = new StreamWriter(filePath))
-                    using (var csv = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
+                    using (var csv = new CsvWriter(writer))
                     {
+                        csv.Configuration.CultureInfo = System.Globalization.CultureInfo.InvariantCulture;
                         csv.WriteRecords(_allAttributes);
                     }
                     args.Result = filePath;
