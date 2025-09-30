@@ -43,6 +43,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.dgvAttributes = new System.Windows.Forms.DataGridView();
             this.grpActions = new System.Windows.Forms.GroupBox();
             this.btnClose = new System.Windows.Forms.Button();
+            this.btnColumns = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
             this.grpSolution.SuspendLayout();
             this.grpAttributes.SuspendLayout();
