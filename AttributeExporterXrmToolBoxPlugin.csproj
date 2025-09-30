@@ -15,8 +15,14 @@
     <Version>1.0.0</Version>
     <Authors>Samuel Hurley</Authors>
     <Company>Procentrix</Company>
-    <Description>XRM ToolBox Plugin for exporting attribute metadata to CSV</Description>
-    <CopyLocalLockFileAssemblies >true</CopyLocalLockFileAssemblies >
+    <Description>XRM ToolBox Plugin for exporting attribute metadata to CSV with advanced column management</Description>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- NuGet Package Metadata -->
+    <PackageProjectUrl>https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin</PackageProjectUrl>
+    <PackageIcon>icon-128.png</PackageIcon>
+    <RepositoryUrl>https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,6 +53,7 @@
 
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
+    <None Include="Resources\icon-128.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -166,3 +166,6 @@ MigrationBackup/
 
 # Fody - when Costura is disabled, no need for compressed files
 Costura/
+PLUGIN_STORE_REQUIREMENTS.md
+Resources/icon.png
+generate-icons.ps1
