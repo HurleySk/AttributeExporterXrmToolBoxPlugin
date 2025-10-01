@@ -99,8 +99,11 @@ namespace AttributeExporterXrmToolBoxPlugin.Services
                 case PicklistAttributeMetadata picklistAttr:
                     if (picklistAttr.OptionSet != null)
                     {
-                        var optionCount = picklistAttr.OptionSet.Options?.Count ?? 0;
-                        parts.Add($"Options: {optionCount} choices");
+                        if (picklistAttr.OptionSet.Options != null && picklistAttr.OptionSet.Options.Count > 0)
+                        {
+                            var optionsText = FormatOptionSetOptions(picklistAttr.OptionSet.Options);
+                            parts.Add($"Options: {optionsText}");
+                        }
                         if (!string.IsNullOrWhiteSpace(picklistAttr.OptionSet.Name))
                             parts.Add($"OptionSet: {picklistAttr.OptionSet.Name}");
                         if (picklistAttr.DefaultFormValue.HasValue)
@@ -113,8 +116,11 @@ namespace AttributeExporterXrmToolBoxPlugin.Services
                 case MultiSelectPicklistAttributeMetadata multiSelectAttr:
                     if (multiSelectAttr.OptionSet != null)
                     {
-                        var optionCount = multiSelectAttr.OptionSet.Options?.Count ?? 0;
-                        parts.Add($"Options: {optionCount} choices (Multi-Select)");
+                        if (multiSelectAttr.OptionSet.Options != null && multiSelectAttr.OptionSet.Options.Count > 0)
+                        {
+                            var optionsText = FormatOptionSetOptions(multiSelectAttr.OptionSet.Options);
+                            parts.Add($"Options: {optionsText} (Multi-Select)");
+                        }
                         if (!string.IsNullOrWhiteSpace(multiSelectAttr.OptionSet.Name))
                             parts.Add($"OptionSet: {multiSelectAttr.OptionSet.Name}");
                     }
@@ -136,18 +142,18 @@ namespace AttributeExporterXrmToolBoxPlugin.Services
                     break;
 
                 case StateAttributeMetadata stateAttr:
-                    if (stateAttr.OptionSet != null)
+                    if (stateAttr.OptionSet != null && stateAttr.OptionSet.Options != null && stateAttr.OptionSet.Options.Count > 0)
                     {
-                        var optionCount = stateAttr.OptionSet.Options?.Count ?? 0;
-                        parts.Add($"States: {optionCount}");
+                        var optionsText = FormatOptionSetOptions(stateAttr.OptionSet.Options);
+                        parts.Add($"States: {optionsText}");
                     }
                     break;
 
                 case StatusAttributeMetadata statusAttr:
-                    if (statusAttr.OptionSet != null)
+                    if (statusAttr.OptionSet != null && statusAttr.OptionSet.Options != null && statusAttr.OptionSet.Options.Count > 0)
                     {
-                        var optionCount = statusAttr.OptionSet.Options?.Count ?? 0;
-                        parts.Add($"Status Codes: {optionCount}");
+                        var optionsText = FormatOptionSetOptions(statusAttr.OptionSet.Options);
+                        parts.Add($"Status Codes: {optionsText}");
                     }
                     break;
 
@@ -176,6 +182,22 @@ namespace AttributeExporterXrmToolBoxPlugin.Services
 
             formula = formula.Replace("\r\n", " ").Replace("\n", " ").Trim();
             return formula.Length > maxLength ? formula.Substring(0, maxLength) + "..." : formula;
+        }
+
+        /// <summary>
+        /// Formats option set options as "Value=Label, Value=Label, ..."
+        /// </summary>
+        private static string FormatOptionSetOptions(Microsoft.Xrm.Sdk.Metadata.OptionMetadataCollection options)
+        {
+            if (options == null || options.Count == 0)
+                return string.Empty;
+
+            var formattedOptions = options
+                .Where(o => o.Value.HasValue)
+                .Select(o => $"{o.Value}={o.Label?.UserLocalizedLabel?.Label ?? "N/A"}")
+                .ToList();
+
+            return string.Join(", ", formattedOptions);
         }
     }
 }
