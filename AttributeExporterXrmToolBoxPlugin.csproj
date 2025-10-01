@@ -14,7 +14,7 @@
     <RootNamespace>AttributeExporterXrmToolBoxPlugin</RootNamespace>
     <Version>1.0.0</Version>
     <Authors>Samuel Hurley</Authors>
-    <Company>Procentrix</Company>
+    <Company>Samuel Hurley</Company>
     <Description>XRM ToolBox Plugin for exporting attribute metadata to CSV with advanced column management</Description>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
