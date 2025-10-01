@@ -795,16 +795,23 @@ namespace AttributeExporterXrmToolBoxPlugin
                 SetComboBoxValue(cboFilterPrimaryId, _columnConfiguration.ActiveFilters.IsPrimaryId);
             }
 
-            // Initialize default values for combo boxes if not set
-            if (cboFilterRequired.SelectedIndex == -1) cboFilterRequired.SelectedIndex = 0;
-            if (cboFilterCustom.SelectedIndex == -1) cboFilterCustom.SelectedIndex = 0;
-            if (cboFilterPrimaryId.SelectedIndex == -1) cboFilterPrimaryId.SelectedIndex = 0;
+            // Initialize default values for combo boxes if not set (and they have items)
+            if (cboFilterRequired.Items.Count > 0 && cboFilterRequired.SelectedIndex == -1)
+                cboFilterRequired.SelectedIndex = 0;
+            if (cboFilterCustom.Items.Count > 0 && cboFilterCustom.SelectedIndex == -1)
+                cboFilterCustom.SelectedIndex = 0;
+            if (cboFilterPrimaryId.Items.Count > 0 && cboFilterPrimaryId.SelectedIndex == -1)
+                cboFilterPrimaryId.SelectedIndex = 0;
 
             AdjustLayoutForFilters();
         }
 
         private void SetComboBoxValue(ComboBox comboBox, string value)
         {
+            // Don't set SelectedIndex if combo box has no items
+            if (comboBox.Items.Count == 0)
+                return;
+
             if (string.IsNullOrEmpty(value) || value == "All")
             {
                 comboBox.SelectedIndex = 0;
