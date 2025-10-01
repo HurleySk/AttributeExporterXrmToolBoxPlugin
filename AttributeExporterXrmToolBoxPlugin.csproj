@@ -12,7 +12,7 @@
 
     <AssemblyName>AttributeExporterXrmToolBoxPlugin</AssemblyName>
     <RootNamespace>AttributeExporterXrmToolBoxPlugin</RootNamespace>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Authors>Samuel Hurley</Authors>
     <Company>Samuel Hurley</Company>
     <Copyright>Copyright (c) Samuel Hurley 2025</Copyright>
