@@ -16,6 +16,7 @@ namespace AttributeExporterXrmToolBoxPlugin
     [ExportMetadata("BackgroundColor", "White")]
     [ExportMetadata("PrimaryFontColor", "Black")]
     [ExportMetadata("SecondaryFontColor", "Gray")]
+    [ExportMetadata("IsOpenSource", true)]
     public class AttributeExporterPlugin : PluginBase, IGitHubPlugin
     {
         public string RepositoryName => "AttributeExporterXrmToolBoxPlugin";
