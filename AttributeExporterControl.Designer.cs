@@ -53,11 +53,15 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.lblFilterStatus = new System.Windows.Forms.Label();
             this.lblAttributeCount = new System.Windows.Forms.Label();
             this.dgvAttributes = new System.Windows.Forms.DataGridView();
+            this.cmsGridContext = new System.Windows.Forms.ContextMenuStrip();
+            this.tsmCopyCells = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmCopyFullRows = new System.Windows.Forms.ToolStripMenuItem();
             this.lblConnectionMessage = new System.Windows.Forms.Label();
             this.grpActions = new System.Windows.Forms.GroupBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnColumns = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
+            this.btnReloadSolutions = new System.Windows.Forms.Button();
             this.grpSolution.SuspendLayout();
             this.grpAttributes.SuspendLayout();
             this.pnlAdvancedFilters.SuspendLayout();
@@ -146,6 +150,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.cboSolutions.Name = "cboSolutions";
             this.cboSolutions.Size = new System.Drawing.Size(640, 21);
             this.cboSolutions.TabIndex = 4;
+            this.cboSolutions.SelectedIndexChanged += new System.EventHandler(this.cboSolutions_SelectedIndexChanged);
             // 
             // grpAttributes
             //
@@ -317,18 +322,18 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.lblFilterStatus.AutoSize = true;
             this.lblFilterStatus.Location = new System.Drawing.Point(20, 93);
             this.lblFilterStatus.Name = "lblFilterStatus";
-            this.lblFilterStatus.Size = new System.Drawing.Size(110, 13);
+            this.lblFilterStatus.Size = new System.Drawing.Size(89, 13);
             this.lblFilterStatus.TabIndex = 4;
-            this.lblFilterStatus.Text = "Showing 0 of 0 attributes";
+            this.lblFilterStatus.Text = "Total Attributes: 0";
             //
             // lblAttributeCount
             //
             this.lblAttributeCount.AutoSize = true;
             this.lblAttributeCount.Location = new System.Drawing.Point(700, 93);
             this.lblAttributeCount.Name = "lblAttributeCount";
-            this.lblAttributeCount.Size = new System.Drawing.Size(89, 13);
+            this.lblAttributeCount.Size = new System.Drawing.Size(107, 13);
             this.lblAttributeCount.TabIndex = 1;
-            this.lblAttributeCount.Text = "Total Attributes: 0";
+            this.lblAttributeCount.Text = "Selected Attributes: 0";
             //
             // dgvAttributes
             //
@@ -338,12 +343,36 @@ namespace AttributeExporterXrmToolBoxPlugin
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvAttributes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvAttributes.ContextMenuStrip = this.cmsGridContext;
             this.dgvAttributes.Location = new System.Drawing.Point(20, 113);
             this.dgvAttributes.Name = "dgvAttributes";
             this.dgvAttributes.ReadOnly = true;
-            this.dgvAttributes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvAttributes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvAttributes.Size = new System.Drawing.Size(920, 247);
             this.dgvAttributes.TabIndex = 0;
+            //
+            // cmsGridContext
+            //
+            this.cmsGridContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmCopyCells,
+            this.tsmCopyFullRows});
+            this.cmsGridContext.Name = "cmsGridContext";
+            this.cmsGridContext.Size = new System.Drawing.Size(181, 48);
+            this.cmsGridContext.Opening += new System.ComponentModel.CancelEventHandler(this.cmsGridContext_Opening);
+            //
+            // tsmCopyCells
+            //
+            this.tsmCopyCells.Name = "tsmCopyCells";
+            this.tsmCopyCells.Size = new System.Drawing.Size(180, 22);
+            this.tsmCopyCells.Text = "Copy Cell(s)";
+            this.tsmCopyCells.Click += new System.EventHandler(this.tsmCopyCells_Click);
+            //
+            // tsmCopyFullRows
+            //
+            this.tsmCopyFullRows.Name = "tsmCopyFullRows";
+            this.tsmCopyFullRows.Size = new System.Drawing.Size(180, 22);
+            this.tsmCopyFullRows.Text = "Copy Full Row(s)";
+            this.tsmCopyFullRows.Click += new System.EventHandler(this.tsmCopyFullRows_Click);
             //
             // lblConnectionMessage
             //
@@ -360,12 +389,13 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.lblConnectionMessage.Visible = false;
             //
             // grpActions
-            // 
+            //
             this.grpActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpActions.Controls.Add(this.btnClose);
             this.grpActions.Controls.Add(this.btnColumns);
             this.grpActions.Controls.Add(this.btnExport);
+            this.grpActions.Controls.Add(this.btnReloadSolutions);
             this.grpActions.Location = new System.Drawing.Point(12, 504);
             this.grpActions.Name = "grpActions";
             this.grpActions.Size = new System.Drawing.Size(960, 60);
@@ -406,7 +436,19 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.btnExport.Text = "Export to CSV";
             this.btnExport.UseVisualStyleBackColor = true;
             this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
-            // 
+            //
+            // btnReloadSolutions
+            //
+            this.btnReloadSolutions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnReloadSolutions.Enabled = false;
+            this.btnReloadSolutions.Location = new System.Drawing.Point(480, 20);
+            this.btnReloadSolutions.Name = "btnReloadSolutions";
+            this.btnReloadSolutions.Size = new System.Drawing.Size(140, 30);
+            this.btnReloadSolutions.TabIndex = 3;
+            this.btnReloadSolutions.Text = "Reload Solutions";
+            this.btnReloadSolutions.UseVisualStyleBackColor = true;
+            this.btnReloadSolutions.Click += new System.EventHandler(this.btnReloadSolutions_Click);
+            //
             // AttributeExporterControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -447,6 +489,7 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnColumns;
         private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.Button btnReloadSolutions;
         private System.Windows.Forms.Panel pnlAdvancedFilters;
         private System.Windows.Forms.Label lblFilterTable;
         private System.Windows.Forms.TextBox txtFilterTable;
@@ -461,5 +504,8 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.Label lblFilterPrimaryId;
         private System.Windows.Forms.ComboBox cboFilterPrimaryId;
         private System.Windows.Forms.Button btnClearFilters;
+        private System.Windows.Forms.ContextMenuStrip cmsGridContext;
+        private System.Windows.Forms.ToolStripMenuItem tsmCopyCells;
+        private System.Windows.Forms.ToolStripMenuItem tsmCopyFullRows;
     }
 }

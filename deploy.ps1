@@ -32,6 +32,7 @@ Write-Host "`n=== XRM ToolBox Plugin Deployment ===" -ForegroundColor Cyan
 # Check if XRM ToolBox is running
 Write-Host "`nChecking for running XRM ToolBox processes..." -ForegroundColor Yellow
 $xrmProcesses = Get-Process -Name "XrmToolBox" -ErrorAction SilentlyContinue
+$shouldRelaunch = $false
 
 if ($xrmProcesses) {
     Write-Host "  WARNING: XRM ToolBox is currently running!" -ForegroundColor Red
@@ -47,6 +48,7 @@ if ($xrmProcesses) {
                     $proc.Kill()
                 }
                 Write-Host "  Closed process $($proc.Id)" -ForegroundColor Green
+                $shouldRelaunch = $true
             }
             catch {
                 Write-Host "  Failed to close process $($proc.Id): $($_.Exception.Message)" -ForegroundColor Red
@@ -284,10 +286,51 @@ if ($allFilesPresent -and -not $deploymentFailed) {
         Write-Host "`nNote: Old plugin files were removed from OneDrive locations." -ForegroundColor Yellow
     }
 
-    Write-Host "`nNext steps:" -ForegroundColor Yellow
-    Write-Host "  1. Start XRM ToolBox" -ForegroundColor White
-    Write-Host "  2. Connect to your environment" -ForegroundColor White
-    Write-Host "  3. Look for 'Attribute Metadata Exporter' in Tools menu" -ForegroundColor White
+    # Relaunch XRM ToolBox if we closed it
+    if ($shouldRelaunch -and -not $WhatIf) {
+        Write-Host "`nRelaunching XRM ToolBox..." -ForegroundColor Yellow
+
+        # Search for XrmToolBox.exe in common locations
+        $possibleXrmPaths = @(
+            "$env:APPDATA\MscrmTools\XrmToolBox\XrmToolBox.exe",
+            "$env:USERPROFILE\Documents\XrmToolbox\XrmToolBox.exe",
+            "$env:USERPROFILE\OneDrive\Documents\XrmToolbox\XrmToolBox.exe",
+            "$env:USERPROFILE\OneDrive - *\Documents\XrmToolbox\XrmToolBox.exe",
+            "$env:OneDrive\Documents\XrmToolbox\XrmToolBox.exe",
+            "$env:OneDriveCommercial\Documents\XrmToolbox\XrmToolBox.exe"
+        )
+
+        $xrmToolBoxPath = $null
+        foreach ($pattern in $possibleXrmPaths) {
+            $resolved = Resolve-Path $pattern -ErrorAction SilentlyContinue
+            if ($resolved) {
+                $xrmToolBoxPath = $resolved.Path | Select-Object -First 1
+                break
+            }
+        }
+
+        if ($xrmToolBoxPath) {
+            try {
+                Start-Process $xrmToolBoxPath
+                Write-Host "  XRM ToolBox launched successfully!" -ForegroundColor Green
+            }
+            catch {
+                Write-Host "  Failed to launch XRM ToolBox: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "  Please start it manually from: $xrmToolBoxPath" -ForegroundColor Yellow
+            }
+        }
+        else {
+            Write-Host "  XRM ToolBox executable not found in common locations." -ForegroundColor Yellow
+            Write-Host "  Please start it manually." -ForegroundColor Gray
+        }
+    }
+    elseif (-not $shouldRelaunch) {
+        Write-Host "`nNext steps:" -ForegroundColor Yellow
+        Write-Host "  1. Start XRM ToolBox" -ForegroundColor White
+        Write-Host "  2. Connect to your environment" -ForegroundColor White
+        Write-Host "  3. Look for 'Attribute Metadata Exporter' in Tools menu" -ForegroundColor White
+    }
+
     exit 0
 }
 else {

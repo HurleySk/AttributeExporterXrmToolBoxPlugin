@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 
@@ -21,6 +22,9 @@ namespace AttributeExporterXrmToolBoxPlugin
         private List<AttributeMetadataInfo> _filteredAttributes;
         private List<Models.SolutionInfo> _solutions;
         private ColumnConfiguration _columnConfiguration;
+        private int _selectionAnchorRow = -1; // Tracks the anchor row for Shift+Click selection
+        private bool _attributesLoaded = false;
+        private string _lastLoadedState = null; // Tracks what was last loaded (solution ID or "AllEntities")
 
         public AttributeExporterControl()
         {
@@ -33,8 +37,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             _columnConfiguration = ColumnConfigurationService.LoadConfiguration();
             RebuildColumns(_columnConfiguration);
 
-            // Restore filter state
-            RestoreFilterState();
+            // Filters intentionally not restored - start fresh each session
         }
 
         private void AttributeExporterControl_Load(object sender, EventArgs e)
@@ -52,8 +55,9 @@ namespace AttributeExporterXrmToolBoxPlugin
         {
             bool hasConnection = Service != null;
 
-            // Update export button state
+            // Update button states
             btnExport.Enabled = hasConnection && _allAttributes.Count > 0;
+            btnReloadSolutions.Enabled = hasConnection && rdoSelectedSolution.Checked;
 
             // Show/hide connection message (informational only)
             lblConnectionMessage.Visible = !hasConnection;
@@ -64,6 +68,22 @@ namespace AttributeExporterXrmToolBoxPlugin
             }
         }
 
+        private void UpdateLoadAttributesButtonText()
+        {
+            // Determine current state
+            string currentState = rdoAllEntities.Checked ? "AllEntities" : cboSolutions.SelectedValue?.ToString();
+
+            // If attributes have been loaded and the state hasn't changed, show "Reload"
+            if (_attributesLoaded && currentState == _lastLoadedState)
+            {
+                btnLoadAttributes.Text = "Reload Attributes";
+            }
+            else
+            {
+                btnLoadAttributes.Text = "Load Attributes";
+            }
+        }
+
         private void LoadSolutions()
         {
             WorkAsync(new WorkAsyncInfo
@@ -71,6 +91,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Message = "Loading solutions...",
                 Work = (worker, args) =>
                 {
+                    // Query 1: Get all visible solutions (managed and unmanaged)
                     var query = new QueryExpression("solution")
                     {
                         ColumnSet = new ColumnSet("solutionid", "friendlyname", "uniquename", "version"),
@@ -78,21 +99,48 @@ namespace AttributeExporterXrmToolBoxPlugin
                         {
                             Conditions =
                             {
-                                new ConditionExpression("isvisible", ConditionOperator.Equal, true),
-                                new ConditionExpression("ismanaged", ConditionOperator.Equal, false)
+                                new ConditionExpression("isvisible", ConditionOperator.Equal, true)
                             }
                         }
                     };
                     query.Orders.Add(new OrderExpression("friendlyname", OrderType.Ascending));
 
                     var solutions = Service.RetrieveMultiple(query);
-                    args.Result = solutions.Entities.Select(e => new Models.SolutionInfo
+
+                    // Query 2: Get solution IDs that contain attributes (componenttype = 2)
+                    // This ensures only solutions with exportable attribute metadata appear in dropdown
+                    var componentQuery = new QueryExpression("solutioncomponent")
                     {
-                        Id = e.Id,
-                        Name = e.GetAttributeValue<string>("friendlyname"),
-                        UniqueName = e.GetAttributeValue<string>("uniquename"),
-                        Version = e.GetAttributeValue<string>("version")
-                    }).ToList();
+                        ColumnSet = new ColumnSet("solutionid"),
+                        Criteria = new FilterExpression
+                        {
+                            Conditions =
+                            {
+                                new ConditionExpression("componenttype", ConditionOperator.Equal, 2) // 2 = Attribute
+                            }
+                        },
+                        Distinct = true
+                    };
+
+                    var componentsWithAttributes = Service.RetrieveMultiple(componentQuery);
+                    var solutionIdsWithAttributes = componentsWithAttributes.Entities
+                        .Select(e => e.GetAttributeValue<EntityReference>("solutionid")?.Id ?? Guid.Empty)
+                        .Where(id => id != Guid.Empty)
+                        .ToHashSet();
+
+                    // Filter solutions to only those with attributes
+                    var filteredSolutions = solutions.Entities
+                        .Where(e => solutionIdsWithAttributes.Contains(e.Id))
+                        .Select(e => new Models.SolutionInfo
+                        {
+                            Id = e.Id,
+                            Name = e.GetAttributeValue<string>("friendlyname"),
+                            UniqueName = e.GetAttributeValue<string>("uniquename"),
+                            Version = e.GetAttributeValue<string>("version")
+                        })
+                        .ToList();
+
+                    args.Result = filteredSolutions;
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -116,8 +164,9 @@ namespace AttributeExporterXrmToolBoxPlugin
             dgvAttributes.AllowUserToAddRows = false;
             dgvAttributes.AllowUserToDeleteRows = false;
             dgvAttributes.ReadOnly = true;
-            dgvAttributes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvAttributes.SelectionMode = DataGridViewSelectionMode.CellSelect;
             dgvAttributes.MultiSelect = true;
+            dgvAttributes.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
 
             // Enable advanced features
             dgvAttributes.AllowUserToOrderColumns = true;
@@ -128,6 +177,9 @@ namespace AttributeExporterXrmToolBoxPlugin
             dgvAttributes.ColumnDisplayIndexChanged -= dgvAttributes_ColumnDisplayIndexChanged;
             dgvAttributes.ColumnWidthChanged -= dgvAttributes_ColumnWidthChanged;
             dgvAttributes.Sorted -= dgvAttributes_Sorted;
+            dgvAttributes.CellMouseDown -= dgvAttributes_CellMouseDown;
+            dgvAttributes.CellDoubleClick -= dgvAttributes_CellDoubleClick;
+            dgvAttributes.SelectionChanged -= dgvAttributes_SelectionChanged;
 
             // Clear existing columns
             dgvAttributes.Columns.Clear();
@@ -157,6 +209,9 @@ namespace AttributeExporterXrmToolBoxPlugin
             dgvAttributes.ColumnDisplayIndexChanged += dgvAttributes_ColumnDisplayIndexChanged;
             dgvAttributes.ColumnWidthChanged += dgvAttributes_ColumnWidthChanged;
             dgvAttributes.Sorted += dgvAttributes_Sorted;
+            dgvAttributes.CellMouseDown += dgvAttributes_CellMouseDown;
+            dgvAttributes.CellDoubleClick += dgvAttributes_CellDoubleClick;
+            dgvAttributes.SelectionChanged += dgvAttributes_SelectionChanged;
 
             // Restore sort state if available
             // Note: We don't programmatically sort here because DataGridView.Sort() requires IBindingList
@@ -217,12 +272,187 @@ namespace AttributeExporterXrmToolBoxPlugin
             }
         }
 
+        private void dgvAttributes_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // Only handle row header clicks (column index -1)
+            if (e.ColumnIndex != -1 || e.RowIndex < 0 || e.Button != MouseButtons.Left)
+                return;
+
+            // Check for modifier keys
+            bool ctrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+            bool shiftPressed = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
+
+            if (shiftPressed && _selectionAnchorRow >= 0 && _selectionAnchorRow < dgvAttributes.Rows.Count)
+            {
+                // Shift+Click: Select range from anchor row to clicked row
+                int startRow = Math.Min(_selectionAnchorRow, e.RowIndex);
+                int endRow = Math.Max(_selectionAnchorRow, e.RowIndex);
+
+                dgvAttributes.ClearSelection();
+                for (int row = startRow; row <= endRow; row++)
+                {
+                    foreach (DataGridViewCell cell in dgvAttributes.Rows[row].Cells)
+                    {
+                        cell.Selected = true;
+                    }
+                }
+
+                // DON'T set CurrentCell during Shift+Click - it would clear our selection
+                // The arrow indicator stays at the anchor row
+            }
+            else
+            {
+                // Set the current cell FIRST (moves the arrow indicator)
+                if (dgvAttributes.Rows[e.RowIndex].Cells.Count > 0)
+                {
+                    dgvAttributes.CurrentCell = dgvAttributes.Rows[e.RowIndex].Cells[0];
+                }
+
+                if (ctrlPressed)
+                {
+                    // Ctrl+Click: Toggle row selection
+                    bool isRowSelected = dgvAttributes.Rows[e.RowIndex].Cells.Cast<DataGridViewCell>().Any(c => c.Selected);
+
+                    foreach (DataGridViewCell cell in dgvAttributes.Rows[e.RowIndex].Cells)
+                    {
+                        cell.Selected = !isRowSelected;
+                    }
+                }
+                else
+                {
+                    // Normal click: Select only this row
+                    dgvAttributes.ClearSelection();
+                    foreach (DataGridViewCell cell in dgvAttributes.Rows[e.RowIndex].Cells)
+                    {
+                        cell.Selected = true;
+                    }
+                }
+
+                // Update anchor row for future Shift+Click operations
+                _selectionAnchorRow = e.RowIndex;
+            }
+        }
+
+        private void dgvAttributes_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Ignore header row clicks
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+                return;
+
+            try
+            {
+                var cell = dgvAttributes.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                var columnName = dgvAttributes.Columns[e.ColumnIndex].HeaderText;
+                var cellValue = cell.Value?.ToString() ?? "(empty)";
+
+                // Show custom dialog with copy button
+                using (var dialog = new Form())
+                {
+                    dialog.Text = columnName;
+                    dialog.Width = 500;
+                    dialog.Height = 350;
+                    dialog.StartPosition = FormStartPosition.CenterParent;
+                    dialog.FormBorderStyle = FormBorderStyle.Sizable;
+                    dialog.MinimizeBox = false;
+                    dialog.MaximizeBox = false;
+
+                    // TextBox to display value
+                    var textBox = new TextBox
+                    {
+                        Multiline = true,
+                        ReadOnly = true,
+                        ScrollBars = ScrollBars.Both,
+                        Text = cellValue,
+                        Dock = DockStyle.Fill,
+                        Font = new System.Drawing.Font("Segoe UI", 9F),
+                        BorderStyle = BorderStyle.None,
+                        BackColor = System.Drawing.SystemColors.Window
+                    };
+
+                    // Panel for buttons
+                    var buttonPanel = new Panel
+                    {
+                        Height = 40,
+                        Dock = DockStyle.Bottom,
+                        Padding = new Padding(10)
+                    };
+
+                    // Copy button
+                    var btnCopy = new Button
+                    {
+                        Text = "Copy Text",
+                        Width = 90,
+                        Height = 30,
+                        Location = new System.Drawing.Point(10, 5),
+                        DialogResult = DialogResult.None
+                    };
+                    btnCopy.Click += (s, args) =>
+                    {
+                        Clipboard.SetText(cellValue);
+                        btnCopy.Text = "Copied!";
+                        Task.Delay(1000).ContinueWith(t =>
+                        {
+                            if (!btnCopy.IsDisposed)
+                            {
+                                btnCopy.Invoke(new Action(() => btnCopy.Text = "Copy Text"));
+                            }
+                        });
+                    };
+
+                    // OK button
+                    var btnOk = new Button
+                    {
+                        Text = "OK",
+                        Width = 80,
+                        Height = 30,
+                        Location = new System.Drawing.Point(110, 5),
+                        DialogResult = DialogResult.OK
+                    };
+
+                    buttonPanel.Controls.Add(btnCopy);
+                    buttonPanel.Controls.Add(btnOk);
+
+                    // Panel for textbox with padding
+                    var textPanel = new Panel
+                    {
+                        Dock = DockStyle.Fill,
+                        Padding = new Padding(10)
+                    };
+                    textPanel.Controls.Add(textBox);
+
+                    dialog.Controls.Add(textPanel);
+                    dialog.Controls.Add(buttonPanel);
+                    dialog.AcceptButton = btnOk;
+
+                    dialog.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error displaying cell value: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void dgvAttributes_SelectionChanged(object sender, EventArgs e)
+        {
+            // Count unique rows that have at least one selected cell
+            var selectedRowCount = dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
+                .Select(c => c.RowIndex)
+                .Distinct()
+                .Count();
+
+            lblAttributeCount.Text = $"Selected Attributes: {selectedRowCount}";
+        }
+
         private void rdoSelectedSolution_CheckedChanged(object sender, EventArgs e)
         {
             if (rdoSelectedSolution.Checked)
             {
                 lblSolution.Enabled = true;
                 cboSolutions.Enabled = true;
+                btnReloadSolutions.Enabled = Service != null;
+                UpdateLoadAttributesButtonText();
             }
         }
 
@@ -233,7 +463,14 @@ namespace AttributeExporterXrmToolBoxPlugin
                 lblSolution.Enabled = false;
                 cboSolutions.Enabled = false;
                 cboSolutions.SelectedIndex = -1; // Clear selection
+                btnReloadSolutions.Enabled = false;
+                UpdateLoadAttributesButtonText();
             }
+        }
+
+        private void cboSolutions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateLoadAttributesButtonText();
         }
 
         private void btnLoadAttributes_Click(object sender, EventArgs e)
@@ -311,7 +548,15 @@ namespace AttributeExporterXrmToolBoxPlugin
                     // Populate filter type dropdown with distinct types from loaded data
                     PopulateFilterTypeComboBox();
 
+                    // Clear filters on new load
+                    ClearAllFilters();
+
                     RefreshGrid();
+
+                    // Update state tracking for dynamic button text
+                    _attributesLoaded = true;
+                    _lastLoadedState = "AllEntities";
+                    UpdateLoadAttributesButtonText();
 
                     MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from all entities",
                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -326,51 +571,112 @@ namespace AttributeExporterXrmToolBoxPlugin
                 Message = $"Loading attributes for solution '{solution.Name}'...",
                 Work = (worker, args) =>
                 {
+                    // Query for ATTRIBUTES (componenttype = 2) in this solution
                     var query = new QueryExpression("solutioncomponent")
                     {
-                        ColumnSet = new ColumnSet("objectid", "componenttype"),
+                        ColumnSet = new ColumnSet("objectid"),
                         Criteria = new FilterExpression
                         {
                             Conditions =
                             {
                                 new ConditionExpression("solutionid", ConditionOperator.Equal, solution.Id),
-                                new ConditionExpression("componenttype", ConditionOperator.Equal, 1) // Entity
+                                new ConditionExpression("componenttype", ConditionOperator.Equal, 2) // 2 = Attribute
                             }
                         }
                     };
 
                     var solutionComponents = Service.RetrieveMultiple(query);
-                    var entityIds = solutionComponents.Entities.Select(e => e.GetAttributeValue<Guid>("objectid")).ToList();
+                    var attributeMetadataIds = solutionComponents.Entities
+                        .Select(e => e.GetAttributeValue<Guid>("objectid"))
+                        .ToList();
 
                     var attributes = new List<AttributeMetadataInfo>();
-                    foreach (var entityId in entityIds)
+
+                    if (attributeMetadataIds.Count == 0)
+                    {
+                        args.Result = attributes;
+                        return;
+                    }
+
+                    // OPTIMIZATION: Batch retrieve all attributes using ExecuteMultipleRequest
+                    var executeMultipleRequest = new ExecuteMultipleRequest
+                    {
+                        Requests = new OrganizationRequestCollection(),
+                        Settings = new ExecuteMultipleSettings
+                        {
+                            ContinueOnError = true,
+                            ReturnResponses = true
+                        }
+                    };
+
+                    // Add all attribute retrieval requests to the batch
+                    foreach (var metadataId in attributeMetadataIds)
+                    {
+                        executeMultipleRequest.Requests.Add(new RetrieveAttributeRequest
+                        {
+                            MetadataId = metadataId,
+                            RetrieveAsIfPublished = true
+                        });
+                    }
+
+                    // Execute all attribute retrievals in one batch
+                    var executeMultipleResponse = (ExecuteMultipleResponse)Service.Execute(executeMultipleRequest);
+
+                    // Collect all successfully retrieved attributes
+                    var retrievedAttributes = new List<AttributeMetadata>();
+                    foreach (var responseItem in executeMultipleResponse.Responses)
+                    {
+                        if (responseItem.Response != null)
+                        {
+                            var attrResponse = (RetrieveAttributeResponse)responseItem.Response;
+                            retrievedAttributes.Add(attrResponse.AttributeMetadata);
+                        }
+                    }
+
+                    // OPTIMIZATION: Cache entity metadata (retrieve each unique entity only once)
+                    var entityCache = new Dictionary<string, EntityMetadata>();
+                    var uniqueEntityNames = retrievedAttributes
+                        .Select(a => a.EntityLogicalName)
+                        .Distinct()
+                        .ToList();
+
+                    foreach (var entityName in uniqueEntityNames)
                     {
                         try
                         {
                             var entityRequest = new RetrieveEntityRequest
                             {
-                                EntityFilters = EntityFilters.Attributes,
-                                LogicalName = GetEntityLogicalName(entityId),
+                                LogicalName = entityName,
+                                EntityFilters = EntityFilters.Entity,
                                 RetrieveAsIfPublished = true
                             };
 
                             var entityResponse = (RetrieveEntityResponse)Service.Execute(entityRequest);
-                            var entity = entityResponse.EntityMetadata;
+                            entityCache[entityName] = entityResponse.EntityMetadata;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error retrieving entity {entityName}: {ex.Message}");
+                        }
+                    }
 
-                            foreach (var attribute in entity.Attributes)
+                    // Build results using cached entity metadata
+                    foreach (var attributeMetadata in retrievedAttributes)
+                    {
+                        try
+                        {
+                            if (attributeMetadata.IsValidForRead == true &&
+                                entityCache.TryGetValue(attributeMetadata.EntityLogicalName, out var entityMetadata))
                             {
-                                if (attribute.IsValidForRead == true)
-                                {
-                                    attributes.Add(ConvertToAttributeInfo(entity, attribute));
-                                }
+                                attributes.Add(ConvertToAttributeInfo(entityMetadata, attributeMetadata));
                             }
                         }
                         catch (Exception ex)
                         {
-                            // Log error but continue
-                            Console.WriteLine($"Error processing entity {entityId}: {ex.Message}");
+                            Console.WriteLine($"Error converting attribute {attributeMetadata.LogicalName}: {ex.Message}");
                         }
                     }
+
                     args.Result = attributes;
                 },
                 PostWorkCallBack = (args) =>
@@ -387,7 +693,15 @@ namespace AttributeExporterXrmToolBoxPlugin
                     // Populate filter type dropdown with distinct types from loaded data
                     PopulateFilterTypeComboBox();
 
+                    // Clear filters on new load
+                    ClearAllFilters();
+
                     RefreshGrid();
+
+                    // Update state tracking for dynamic button text
+                    _attributesLoaded = true;
+                    _lastLoadedState = solution.Id.ToString();
+                    UpdateLoadAttributesButtonText();
 
                     MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from solution '{solution.Name}'",
                         "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -562,8 +876,8 @@ namespace AttributeExporterXrmToolBoxPlugin
         {
             dgvAttributes.DataSource = null;
             dgvAttributes.DataSource = _filteredAttributes;
-            lblAttributeCount.Text = $"Total Attributes: {_allAttributes.Count}";
-            lblFilterStatus.Text = $"Showing {_filteredAttributes.Count} of {_allAttributes.Count} attributes";
+            lblFilterStatus.Text = $"Total Attributes: {_allAttributes.Count}";
+            lblAttributeCount.Text = "Selected Attributes: 0";
             btnExport.Enabled = _filteredAttributes.Count > 0;
         }
 
@@ -642,6 +956,11 @@ namespace AttributeExporterXrmToolBoxPlugin
             ParentForm?.Close();
         }
 
+        private void btnReloadSolutions_Click(object sender, EventArgs e)
+        {
+            ExecuteMethod(LoadSolutions);
+        }
+
         #region Filter Events
 
         private void FilterControl_Changed(object sender, EventArgs e)
@@ -656,8 +975,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 _columnConfiguration.ActiveFilters.IsCustom = cboFilterCustom.SelectedItem?.ToString() ?? "All";
                 _columnConfiguration.ActiveFilters.IsPrimaryId = cboFilterPrimaryId.SelectedItem?.ToString() ?? "All";
 
-                // Save filter state
-                ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+                // Filters are not persisted to disk - only active during session
 
                 // Apply filters
                 ApplyFilter();
@@ -666,23 +984,36 @@ namespace AttributeExporterXrmToolBoxPlugin
 
         private void btnClearFilters_Click(object sender, EventArgs e)
         {
+            ClearAllFilters();
+        }
+
+        private void ClearAllFilters()
+        {
             // Reset all filter controls
             txtFilterTable.Text = string.Empty;
             txtFilterAttribute.Text = string.Empty;
-            cboFilterType.SelectedIndex = 0; // Select "All"
-            cboFilterRequired.SelectedIndex = 0; // Select "All"
-            cboFilterCustom.SelectedIndex = 0; // Select "All"
-            cboFilterPrimaryId.SelectedIndex = 0; // Select "All"
 
-            // Reset filter criteria
+            // Only set combo box if it has items
+            if (cboFilterType.Items.Count > 0)
+                cboFilterType.SelectedIndex = 0; // Select "All"
+            if (cboFilterRequired.Items.Count > 0)
+                cboFilterRequired.SelectedIndex = 0; // Select "All"
+            if (cboFilterCustom.Items.Count > 0)
+                cboFilterCustom.SelectedIndex = 0; // Select "All"
+            if (cboFilterPrimaryId.Items.Count > 0)
+                cboFilterPrimaryId.SelectedIndex = 0; // Select "All"
+
+            // Reset filter criteria in memory
             if (_columnConfiguration?.ActiveFilters != null)
             {
                 _columnConfiguration.ActiveFilters.Reset();
-                ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
             }
 
             // Apply filters (which will now show all results)
-            ApplyFilter();
+            if (_allAttributes.Count > 0)
+            {
+                ApplyFilter();
+            }
         }
 
         private void PopulateFilterTypeComboBox()
@@ -749,6 +1080,83 @@ namespace AttributeExporterXrmToolBoxPlugin
                 {
                     comboBox.SelectedIndex = 0;
                 }
+            }
+        }
+
+        #endregion
+
+        #region Context Menu Events
+
+        private void cmsGridContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Update menu item text based on selection count
+            int selectedCellCount = dgvAttributes.SelectedCells.Count;
+            int selectedRowCount = dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
+                .Select(c => c.RowIndex)
+                .Distinct()
+                .Count();
+
+            tsmCopyCells.Text = selectedCellCount == 1 ? "Copy Cell" : $"Copy Cell(s) ({selectedCellCount})";
+            tsmCopyFullRows.Text = selectedRowCount == 1 ? "Copy Full Row" : $"Copy Full Row(s) ({selectedRowCount})";
+        }
+
+        private void tsmCopyCells_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dgvAttributes.SelectedCells.Count == 0)
+                    return;
+
+                // Use the built-in clipboard copy functionality
+                Clipboard.SetDataObject(dgvAttributes.GetClipboardContent());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error copying cells: {ex.Message}", "Copy Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void tsmCopyFullRows_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dgvAttributes.SelectedCells.Count == 0)
+                    return;
+
+                // Get unique rows from selected cells
+                var selectedRows = dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
+                    .Select(c => c.RowIndex)
+                    .Distinct()
+                    .OrderBy(r => r)
+                    .ToList();
+
+                var result = new System.Text.StringBuilder();
+
+                foreach (var rowIndex in selectedRows)
+                {
+                    var row = dgvAttributes.Rows[rowIndex];
+                    var values = new List<string>();
+
+                    // Get all visible column values
+                    foreach (DataGridViewColumn col in dgvAttributes.Columns)
+                    {
+                        if (col.Visible)
+                        {
+                            var cellValue = row.Cells[col.Index].Value;
+                            values.Add(cellValue?.ToString() ?? "");
+                        }
+                    }
+
+                    result.AppendLine(string.Join("\t", values));
+                }
+
+                Clipboard.SetText(result.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error copying rows: {ex.Message}", "Copy Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
