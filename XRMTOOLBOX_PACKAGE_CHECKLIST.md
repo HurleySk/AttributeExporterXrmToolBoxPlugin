@@ -11,9 +11,9 @@
 | Tags include "XrmToolBox" | ✅ |
 | Project URL valid and publicly accessible | ⚠️ |
 | Icon URL valid and publicly accessible | ⚠️ |
+| LogoUrl provided and publicly accessible | ⚠️ |
 | Repository URL | ✅ |
 | PackageIcon included | ✅ |
-| PackageIconUrl provided | ✅ |
 | Icon is 128x128 PNG | ✅ |
 | Inherits from PluginControlBase | ✅ |
 | MEF Export attribute | ✅ |

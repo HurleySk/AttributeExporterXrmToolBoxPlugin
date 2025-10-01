@@ -1,330 +1,114 @@
 # Attribute Metadata Exporter
 
-**A comprehensive XRM ToolBox plugin for exporting Dataverse/Dynamics 365 attribute metadata to CSV with advanced column management.**
-
-Export all metadata properties for attributes across your entire environment or from specific solutions. Configure which columns to display, reorder them with drag-drop, and save your preferences.
+XRM ToolBox plugin for exporting Dataverse/Dynamics 365 attribute metadata to CSV with advanced column management.
 
 ## Features
 
-### Data Source Options
-- **All Entities**: Export attributes from every table in your environment
-- **Selected Solution**: Export attributes only from tables in a specific unmanaged solution
-- **Load on Demand**: Efficient metadata retrieval with async loading
-
-### Advanced Column Management
-- **40+ Metadata Columns**: Export comprehensive attribute metadata organized into 7 categories
-- **4 Column Presets**: Quick configurations (Basic, Standard, Advanced, Full)
-- **Custom Columns**: Pick exactly which columns you want to see and export
-- **Column Configuration UI**: User-friendly dialog for managing column visibility
-- **Persistent Settings**: Your column preferences are saved across sessions
-
-### Interactive Data Grid
-- **Search & Filter**: Real-time filtering across all visible columns
-- **Sortable Columns**: Click any header to sort ascending/descending
-- **Drag-Drop Reordering**: Rearrange columns by dragging headers
-- **Horizontal Scrolling**: View many columns without cramping
-- **Smart Details Column**: Type-specific metadata automatically formatted per attribute type
-
-### Export Capabilities
-- **CSV Export**: Clean, formatted CSV with only your selected columns
-- **Custom Column Order**: Export respects your current column arrangement
-- **Filtered Export**: Export only what's visible after filtering
-- **Timestamped Files**: Auto-generated filenames (e.g., `AttributeMetadata_20250930_161500.csv`)
+- **Data Sources**: Export from all entities or specific solutions
+- **40+ Metadata Columns**: Organized into 7 categories (Core, Identity, Metadata, Behavior, Security, Audit, Advanced)
+- **Column Presets**: Basic (8), Standard (16), Advanced (28), Full (40+), or Custom
+- **Interactive Grid**: Real-time filtering, sortable columns, drag-drop reordering
+- **Smart Type Details**: Automatically formats type-specific metadata (lookup targets, picklist options, string formats, etc.)
+- **CSV Export**: Export filtered results with selected columns in custom order
+- **Persistent Settings**: Column preferences, sort state, and filters saved across sessions
 
 ## Installation
 
-### Prerequisites
-- **XRM ToolBox** (version 2024.7.x or later)
-- **.NET Framework 4.8** (installed with Windows 10/11)
-- **Dataverse/Dynamics 365 environment** with sufficient read permissions
+### From XRM ToolBox (Recommended)
+1. Open XRM ToolBox → **Tool Library** (Ctrl+T)
+2. Search for "Attribute Metadata Exporter"
+3. Click **Install** and restart
 
-### Option 1: Install from XRM ToolBox (Recommended)
-1. Open XRM ToolBox
-2. Click **Tool Library** (or press Ctrl+T)
-3. Search for "Attribute Metadata Exporter"
-4. Click **Install**
-5. Restart XRM ToolBox
-6. Launch from **Tools** menu
-
-### Option 2: Install from NuGet Package
-1. Download the latest `.nupkg` from [Releases](https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin/releases)
-2. In XRM ToolBox, go to **Plugins Store** → **Install from disk**
-3. Select the downloaded `.nupkg` file
-4. Restart XRM ToolBox
-
-### Option 3: Manual Installation (Development)
-```powershell
-# Clone repository
-git clone https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin.git
-cd AttributeExporterXrmToolBoxPlugin
-
-# Build and deploy
-.\deploy.ps1 -Force
-```
+### From NuGet Package
+1. Download `.nupkg` from [Releases](https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin/releases)
+2. XRM ToolBox → **Plugins Store** → **Install from disk**
+3. Select `.nupkg` file and restart
 
 ## Usage
 
-### Basic Workflow
-
-1. **Connect to Environment**
-   - Open XRM ToolBox
-   - Connect to your Dataverse/Dynamics 365 environment
-   - Launch "Attribute Metadata Exporter"
-
-2. **Choose Data Source**
-   - Select **All Entities** to export from entire environment
-   - OR select **Selected Solution** and choose a solution from dropdown
-   - Click **Load Attributes**
-
-3. **Configure Columns** (Optional)
-   - Click **Columns...** button
-   - Choose a preset or customize individual columns
-   - Drag column headers to reorder
-   - Click OK to apply
-
-4. **Filter & Search** (Optional)
-   - Type in search box to filter attributes
-   - Filter applies across all visible columns
-
-5. **Export to CSV**
-   - Click **Export to CSV**
-   - Choose save location
-   - CSV includes only visible columns in current order
+1. **Connect** to Dataverse environment
+2. **Choose scope**: All Entities or Selected Solution
+3. **Click** "Load Attributes"
+4. **Filter** using table/attribute name, type, required, custom, or primary ID filters
+5. **Configure columns** (optional): Click "Columns..." to select preset or customize
+6. **Export**: Click "Export to CSV"
 
 ### Column Presets
 
 | Preset | Columns | Description |
 |--------|---------|-------------|
-| **Basic** | 8 | Core identification: table/attribute names, type, required, type details, description |
-| **Standard** | 16 | Basic + schema name, custom flag, primary ID, validity flags, version |
-| **Advanced** | 28 | Standard + security, audit, managed status, logical attributes |
-| **Full** | 40+ | Every available metadata property |
-| **Custom** | Variable | Select exactly which columns you want |
+| Basic | 8 | Table/attribute names, type, required, type details, description |
+| Standard | 16 | Basic + schema name, custom flag, primary ID, validity flags, version |
+| Advanced | 28 | Standard + security, audit, managed status, logical attributes |
+| Full | 40+ | All available metadata properties |
+| Custom | Variable | Select specific columns |
 
-### Available Metadata Columns
+### Available Columns by Category
 
-#### Core (8 columns)
-- Table Logical Name, Table Display Name
-- Attribute Logical Name, Attribute Display Name
-- Attribute Type, Required
-- Type Details (smart column), Description
+- **Core** (8): Table/attribute names, type, required, max length, type details, description
+- **Identity** (5): Schema name, metadata ID, primary ID/name flags, attribute of
+- **Metadata** (4): Managed, custom, introduced version, type name
+- **Behavior** (4): Valid for create/read/update, is logical
+- **Security** (4): Secured flags and can-be-secured permissions
+- **Audit** (1): Audit enabled
+- **Advanced** (1): Required level detail
 
-#### Identity (5 columns)
-- Schema Name, Metadata ID
-- Is Primary ID, Is Primary Name, Attribute Of
+## Configuration Storage
 
-#### Metadata (4 columns)
-- Is Managed, Is Custom, Introduced Version, Type Name
-
-#### Behavior (4 columns)
-- Valid For Create, Valid For Read, Valid For Update, Is Logical
-
-#### Security (4 columns)
-- Is Secured, Can Secure Create, Can Secure Read, Can Secure Update
-
-#### Audit (1 column)
-- Audit Enabled
-
-#### Type-Specific (3 columns)
-- Max Length, Type Details, Description
-
-#### Advanced (1 column)
-- Required Level (detailed)
-
-### Smart Type Details Column
-
-The **Type Details** column automatically shows relevant metadata based on attribute type:
-
-- **String**: `Format: Email, MaxLen: 100, Localizable`
-- **Lookup**: `Targets: account, contact, lead`
-- **DateTime**: `Behavior: UserLocal, Format: DateAndTime`
-- **Picklist**: `Options: 5 choices, OptionSet: new_status`
-- **Boolean**: `Labels: Yes / No, Default: No`
-- **Integer**: `Range: 0 to 100, Format: None`
-- **Decimal/Money**: `Precision: 2, Range: 0.00 to 1000000.00`
-
-This eliminates the need for 10+ sparse columns that only apply to specific attribute types.
-
-## Technical Details
-
-### Architecture
-
-```
-AttributeExporterXrmToolBoxPlugin/
-├── AttributeExporterPlugin.cs          # Plugin entry point (MEF export)
-├── AttributeExporterControl.cs         # Main UI control
-├── Models/
-│   ├── AttributeMetadataInfo.cs        # 28 metadata properties
-│   ├── ColumnDefinition.cs             # Column configuration model
-│   ├── ColumnPreset.cs                 # Preset enum
-│   └── SolutionInfo.cs                 # Solution data model
-├── Services/
-│   ├── ColumnConfigurationService.cs   # Preset management, persistence
-│   └── MetadataFormatter.cs            # Smart TypeSpecificDetails logic
-├── Forms/
-│   └── ColumnConfigurationDialog.cs    # Column picker UI
-├── Resources/
-│   └── logo64.png                      # Plugin icon
-└── deploy.ps1                          # Automated deployment script
-```
-
-### Dependencies
-
-- **XrmToolBoxPackage** 1.2025.7.71 - Plugin infrastructure
-- **MscrmTools.Xrm.Connection** 1.2025.7.63 - Connection management
-- **Microsoft.CrmSdk.CoreAssemblies** 9.0.2.59 - Dynamics 365 SDK
-- **CsvHelper** 12.3.2 - CSV export (downgraded for .NET Framework 4.8 compatibility)
-- **System.Windows.Forms** - UI framework
-
-### Configuration Storage
-
-User preferences are saved to:
-```
-%APPDATA%\AttributeExporter\config.json
-```
-
-Contains:
-- Selected preset (Basic/Standard/Advanced/Full/Custom)
-- Column visibility for each of 28 columns
-- Column display order
-- Column widths
-- Last sort column and direction
-
-### Supported Attribute Types
-
-All Dataverse attribute types are supported:
-- String, Memo
-- Integer, Decimal, Double, Money
-- Boolean (Two Options)
-- DateTime
-- Lookup, Customer, Owner
-- Picklist, State, Status, MultiSelectPicklist
-- Image, File
-- Uniqueidentifier, Virtual, EntityName, ManagedProperty
+Settings saved to `%APPDATA%\AttributeExporter\config.json`:
+- Column visibility, order, widths
+- Active filters and sort state
+- Selected preset
 
 ## Building from Source
 
-### Prerequisites
-- Visual Studio 2022 or later
-- .NET Framework 4.8 SDK
-- PowerShell 5.1+ (for deploy script)
-
-### Build Steps
-
 ```bash
-# Clone repository
 git clone https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin.git
 cd AttributeExporterXrmToolBoxPlugin
-
-# Restore NuGet packages
-dotnet restore
-
-# Build Release configuration
 dotnet build --configuration Release
-
-# Deploy (optional)
 .\deploy.ps1 -Force
 ```
 
-### Deploy Script Parameters
-
-```powershell
-# Skip build, just deploy existing binaries
-.\deploy.ps1 -SkipBuild
-
-# Auto-close XRM ToolBox if running
-.\deploy.ps1 -Force
-
-# Show what would be deployed without doing it
-.\deploy.ps1 -WhatIf
-```
+**Deploy script options**: `-SkipBuild`, `-Force`, `-WhatIf`
 
 ## Troubleshooting
 
-### Plugin Doesn't Appear in XRM ToolBox
+**Plugin not appearing**: Delete `%APPDATA%\MscrmTools\XrmToolBox\Plugins\.manifestcache.dat` and restart XRM ToolBox
 
-1. Check deployment path: `%APPDATA%\MscrmTools\XrmToolBox\Plugins\`
-2. Verify all DLL dependencies are present
-3. Delete manifest cache: `%APPDATA%\MscrmTools\XrmToolBox\Plugins\.manifestcache.dat`
-4. Check for old plugin versions in OneDrive locations
-5. Restart XRM ToolBox
+**"Object reference" errors**: Missing dependencies - re-run `deploy.ps1` to copy all DLLs
 
-### "Object reference not set to an instance of an object"
+**Slow "All Entities" load**: Large environments take 30-60s - use "Selected Solution" or filters to narrow scope
 
-- Usually indicates missing DLL dependencies
-- Re-run `deploy.ps1` to ensure all files are copied
-- Check that `CsvHelper.dll`, `Microsoft.Bcl.AsyncInterfaces.dll`, and `System.Threading.Tasks.Extensions.dll` are present
+**Export fails**: Ensure attributes loaded, at least one column visible, and CSV file not open in Excel
 
-### Column Configuration Dialog Shows Type Names Instead of Display Names
+## Technical Details
 
-- Fixed in latest version
-- Update to latest build
-- Clear XRM ToolBox cache
+**Dependencies**:
+- XrmToolBoxPackage 1.2025.7.71
+- Microsoft.CrmSdk.CoreAssemblies 9.0.2.59
+- CsvHelper 12.3.2 (downgraded for .NET Framework 4.8)
 
-### Solution Dropdown Always Has a Selection
-
-- Fixed in latest version
-- Use "All Entities" radio button first, then "Selected Solution"
-- Selection is properly cleared when switching to "All Entities"
-
-### Export Fails or CSV is Empty
-
-- Ensure attributes are loaded (click "Load Attributes" first)
-- Check that at least one column is visible
-- Verify write permissions to export location
-- Don't have CSV file open in Excel during export
-
-### Slow Performance with "All Entities"
-
-- Large environments may take 30-60 seconds to load all metadata
-- Use search/filter to reduce visible rows
-- Consider using "Selected Solution" for specific tables
-- Progress dialog shows loading status
+**Requirements**: XRM ToolBox 2024.7.x+, .NET Framework 4.8
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Test thoroughly in XRM ToolBox
-5. Commit with descriptive messages
-6. Push to your fork
-7. Open a Pull Request
+1. Fork repository
+2. Create feature branch
+3. Test in XRM ToolBox
+4. Submit pull request
 
-### Development Guidelines
-
-- Follow existing code patterns and naming conventions
-- Add XML documentation comments to public APIs
-- Test with multiple Dataverse environments
-- Update README.md if adding user-facing features
-- Use deploy.ps1 for testing deployments
+Follow existing code patterns, add XML docs, update README for user-facing changes.
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License
 
 ## Author
 
 **Samuel Hurley** - [HurleySk](https://github.com/HurleySk)
 
-## Acknowledgments
+Built on [XRM ToolBox](https://www.xrmtoolbox.com/) by Tanguy Touzard
 
-- Built on [XRM ToolBox](https://www.xrmtoolbox.com/) by Tanguy Touzard
-- Uses [CsvHelper](https://joshclose.github.io/CsvHelper/) by Josh Close
-- Powered by Microsoft Dataverse SDK
+---
 
-## Version History
-
-### v1.0.0 (2025-10-01)
-**Initial Release**
-- Export attributes from all entities or specific solutions
-- 40+ metadata columns organized into 7 categories
-- 4 column presets (Basic, Standard, Advanced, Full) + custom configuration
-- Drag-drop column reordering and resizing
-- Real-time search and filtering
-- Sortable columns with persistent sort state
-- Smart type-specific details column
-- CSV export with configurable columns
-- Persistent user preferences
-- Full XRM ToolBox plugin store compliance
-- ExecuteMethod pattern for automatic connection prompts
+**Version 1.0.4** - UX improvements: Simplified filtering with always-visible filter panel
