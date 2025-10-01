@@ -12,7 +12,7 @@
 
     <AssemblyName>AttributeExporterXrmToolBoxPlugin</AssemblyName>
     <RootNamespace>AttributeExporterXrmToolBoxPlugin</RootNamespace>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>Samuel Hurley</Authors>
     <Company>Samuel Hurley</Company>
     <Copyright>Copyright (c) Samuel Hurley 2025</Copyright>
@@ -25,7 +25,7 @@
     <!-- NuGet Package Metadata -->
     <PackageProjectUrl>https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin</PackageProjectUrl>
     <PackageIcon>icon-128.png</PackageIcon>
-    <LogoUrl>https://raw.githubusercontent.com/HurleySk/AttributeExporterXrmToolBoxPlugin/main/Resources/icon-128.png</LogoUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/HurleySk/AttributeExporterXrmToolBoxPlugin/main/Resources/icon-128.png</PackageIconUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>XrmToolBox;Dynamics365;Dataverse;PowerPlatform;Metadata;Export;CSV</PackageTags>
     <PackageReleaseNotes>Initial release: Export Dataverse attribute metadata to CSV with 40+ metadata columns, customizable column presets, drag-drop reordering, search/filter, and persistent user preferences.</PackageReleaseNotes>
