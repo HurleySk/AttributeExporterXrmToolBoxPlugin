@@ -159,13 +159,23 @@ namespace AttributeExporterXrmToolBoxPlugin
             dgvAttributes.Sorted += dgvAttributes_Sorted;
 
             // Restore sort state if available
+            // Note: We don't programmatically sort here because DataGridView.Sort() requires IBindingList
+            // The sort glyph and state will be restored when user clicks a column header
             if (!string.IsNullOrEmpty(config.LastSortColumn))
             {
                 var sortColumn = dgvAttributes.Columns[config.LastSortColumn];
                 if (sortColumn != null && dgvAttributes.DataSource != null)
                 {
-                    dgvAttributes.Sort(sortColumn,
-                        config.LastSortAscending ? System.ComponentModel.ListSortDirection.Ascending : System.ComponentModel.ListSortDirection.Descending);
+                    // If we need to restore sort, re-apply it to the data source itself
+                    var sortedData = _allAttributes.AsEnumerable();
+                    var prop = typeof(AttributeMetadataInfo).GetProperty(config.LastSortColumn);
+                    if (prop != null)
+                    {
+                        sortedData = config.LastSortAscending
+                            ? sortedData.OrderBy(x => prop.GetValue(x))
+                            : sortedData.OrderByDescending(x => prop.GetValue(x));
+                        dgvAttributes.DataSource = sortedData.ToList();
+                    }
                 }
             }
         }
