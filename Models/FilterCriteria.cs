@@ -16,11 +16,6 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         public string AttributeName { get; set; }
 
         /// <summary>
-        /// Filter text for schema name
-        /// </summary>
-        public string SchemaName { get; set; }
-
-        /// <summary>
         /// Filter for attribute type (e.g., "String", "Integer", "Lookup", or "All")
         /// </summary>
         public string AttributeType { get; set; }
@@ -47,7 +42,6 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         {
             TableName = string.Empty;
             AttributeName = string.Empty;
-            SchemaName = string.Empty;
             AttributeType = "All";
             Required = "All";
             IsCustom = "All";
@@ -61,7 +55,6 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         {
             return !string.IsNullOrWhiteSpace(TableName) ||
                    !string.IsNullOrWhiteSpace(AttributeName) ||
-                   !string.IsNullOrWhiteSpace(SchemaName) ||
                    (AttributeType != "All" && !string.IsNullOrWhiteSpace(AttributeType)) ||
                    (Required != "All" && !string.IsNullOrWhiteSpace(Required)) ||
                    (IsCustom != "All" && !string.IsNullOrWhiteSpace(IsCustom)) ||
@@ -75,7 +68,6 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         {
             TableName = string.Empty;
             AttributeName = string.Empty;
-            SchemaName = string.Empty;
             AttributeType = "All";
             Required = "All";
             IsCustom = "All";

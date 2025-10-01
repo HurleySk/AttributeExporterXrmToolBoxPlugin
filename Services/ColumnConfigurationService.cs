@@ -185,11 +185,6 @@ namespace AttributeExporterXrmToolBoxPlugin.Services
         public bool LastSortAscending { get; set; }
 
         /// <summary>
-        /// Whether the advanced filters panel is visible
-        /// </summary>
-        public bool ShowAdvancedFilters { get; set; }
-
-        /// <summary>
         /// Active filter criteria
         /// </summary>
         public FilterCriteria ActiveFilters { get; set; }

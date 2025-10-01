@@ -36,14 +36,11 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.lblSolution = new System.Windows.Forms.Label();
             this.cboSolutions = new System.Windows.Forms.ComboBox();
             this.grpAttributes = new System.Windows.Forms.GroupBox();
-            this.chkShowAdvancedFilters = new System.Windows.Forms.CheckBox();
             this.pnlAdvancedFilters = new System.Windows.Forms.Panel();
             this.lblFilterTable = new System.Windows.Forms.Label();
             this.txtFilterTable = new System.Windows.Forms.TextBox();
             this.lblFilterAttribute = new System.Windows.Forms.Label();
             this.txtFilterAttribute = new System.Windows.Forms.TextBox();
-            this.lblFilterSchema = new System.Windows.Forms.Label();
-            this.txtFilterSchema = new System.Windows.Forms.TextBox();
             this.lblFilterType = new System.Windows.Forms.Label();
             this.cboFilterType = new System.Windows.Forms.ComboBox();
             this.lblFilterRequired = new System.Windows.Forms.Label();
@@ -54,8 +51,6 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.cboFilterPrimaryId = new System.Windows.Forms.ComboBox();
             this.btnClearFilters = new System.Windows.Forms.Button();
             this.lblFilterStatus = new System.Windows.Forms.Label();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.lblSearch = new System.Windows.Forms.Label();
             this.lblAttributeCount = new System.Windows.Forms.Label();
             this.dgvAttributes = new System.Windows.Forms.DataGridView();
             this.lblConnectionMessage = new System.Windows.Forms.Label();
@@ -157,11 +152,8 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpAttributes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpAttributes.Controls.Add(this.chkShowAdvancedFilters);
             this.grpAttributes.Controls.Add(this.pnlAdvancedFilters);
             this.grpAttributes.Controls.Add(this.lblFilterStatus);
-            this.grpAttributes.Controls.Add(this.txtSearch);
-            this.grpAttributes.Controls.Add(this.lblSearch);
             this.grpAttributes.Controls.Add(this.lblAttributeCount);
             this.grpAttributes.Controls.Add(this.dgvAttributes);
             this.grpAttributes.Controls.Add(this.lblConnectionMessage);
@@ -171,18 +163,6 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpAttributes.TabIndex = 1;
             this.grpAttributes.TabStop = false;
             this.grpAttributes.Text = "Attributes";
-            //
-            // chkShowAdvancedFilters
-            //
-            this.chkShowAdvancedFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkShowAdvancedFilters.AutoSize = true;
-            this.chkShowAdvancedFilters.Location = new System.Drawing.Point(780, 22);
-            this.chkShowAdvancedFilters.Name = "chkShowAdvancedFilters";
-            this.chkShowAdvancedFilters.Size = new System.Drawing.Size(160, 17);
-            this.chkShowAdvancedFilters.TabIndex = 6;
-            this.chkShowAdvancedFilters.Text = "Show Advanced Filters";
-            this.chkShowAdvancedFilters.UseVisualStyleBackColor = true;
-            this.chkShowAdvancedFilters.CheckedChanged += new System.EventHandler(this.chkShowAdvancedFilters_CheckedChanged);
             //
             // pnlAdvancedFilters
             //
@@ -201,14 +181,12 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.pnlAdvancedFilters.Controls.Add(this.cboFilterCustom);
             this.pnlAdvancedFilters.Controls.Add(this.lblFilterPrimaryId);
             this.pnlAdvancedFilters.Controls.Add(this.cboFilterPrimaryId);
-            this.pnlAdvancedFilters.Controls.Add(this.lblFilterSchema);
-            this.pnlAdvancedFilters.Controls.Add(this.txtFilterSchema);
             this.pnlAdvancedFilters.Controls.Add(this.btnClearFilters);
-            this.pnlAdvancedFilters.Location = new System.Drawing.Point(20, 45);
+            this.pnlAdvancedFilters.Location = new System.Drawing.Point(20, 20);
             this.pnlAdvancedFilters.Name = "pnlAdvancedFilters";
             this.pnlAdvancedFilters.Size = new System.Drawing.Size(920, 65);
             this.pnlAdvancedFilters.TabIndex = 7;
-            this.pnlAdvancedFilters.Visible = false;
+            this.pnlAdvancedFilters.Visible = true;
             //
             // lblFilterTable
             //
@@ -323,23 +301,6 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.cboFilterPrimaryId.TabIndex = 11;
             this.cboFilterPrimaryId.SelectedIndexChanged += new System.EventHandler(this.FilterControl_Changed);
             //
-            // lblFilterSchema
-            //
-            this.lblFilterSchema.AutoSize = true;
-            this.lblFilterSchema.Location = new System.Drawing.Point(465, 38);
-            this.lblFilterSchema.Name = "lblFilterSchema";
-            this.lblFilterSchema.Size = new System.Drawing.Size(49, 13);
-            this.lblFilterSchema.TabIndex = 12;
-            this.lblFilterSchema.Text = "Schema:";
-            //
-            // txtFilterSchema
-            //
-            this.txtFilterSchema.Location = new System.Drawing.Point(520, 35);
-            this.txtFilterSchema.Name = "txtFilterSchema";
-            this.txtFilterSchema.Size = new System.Drawing.Size(140, 20);
-            this.txtFilterSchema.TabIndex = 13;
-            this.txtFilterSchema.TextChanged += new System.EventHandler(this.FilterControl_Changed);
-            //
             // btnClearFilters
             //
             this.btnClearFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -354,35 +315,16 @@ namespace AttributeExporterXrmToolBoxPlugin
             // lblFilterStatus
             //
             this.lblFilterStatus.AutoSize = true;
-            this.lblFilterStatus.Location = new System.Drawing.Point(20, 50);
+            this.lblFilterStatus.Location = new System.Drawing.Point(20, 93);
             this.lblFilterStatus.Name = "lblFilterStatus";
             this.lblFilterStatus.Size = new System.Drawing.Size(110, 13);
             this.lblFilterStatus.TabIndex = 4;
             this.lblFilterStatus.Text = "Showing 0 of 0 attributes";
             //
-            // txtSearch
-            //
-            this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSearch.Location = new System.Drawing.Point(80, 20);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(860, 20);
-            this.txtSearch.TabIndex = 3;
-            this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
-            //
-            // lblSearch
-            //
-            this.lblSearch.AutoSize = true;
-            this.lblSearch.Location = new System.Drawing.Point(20, 23);
-            this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(44, 13);
-            this.lblSearch.TabIndex = 2;
-            this.lblSearch.Text = "Search:";
-            //
             // lblAttributeCount
             //
             this.lblAttributeCount.AutoSize = true;
-            this.lblAttributeCount.Location = new System.Drawing.Point(700, 50);
+            this.lblAttributeCount.Location = new System.Drawing.Point(700, 93);
             this.lblAttributeCount.Name = "lblAttributeCount";
             this.lblAttributeCount.Size = new System.Drawing.Size(89, 13);
             this.lblAttributeCount.TabIndex = 1;
@@ -396,11 +338,11 @@ namespace AttributeExporterXrmToolBoxPlugin
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvAttributes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvAttributes.Location = new System.Drawing.Point(20, 70);
+            this.dgvAttributes.Location = new System.Drawing.Point(20, 113);
             this.dgvAttributes.Name = "dgvAttributes";
             this.dgvAttributes.ReadOnly = true;
             this.dgvAttributes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvAttributes.Size = new System.Drawing.Size(920, 290);
+            this.dgvAttributes.Size = new System.Drawing.Size(920, 247);
             this.dgvAttributes.TabIndex = 0;
             //
             // lblConnectionMessage
@@ -498,8 +440,6 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.ComboBox cboSolutions;
         private System.Windows.Forms.GroupBox grpAttributes;
         private System.Windows.Forms.Label lblFilterStatus;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.Label lblSearch;
         private System.Windows.Forms.Label lblAttributeCount;
         private System.Windows.Forms.DataGridView dgvAttributes;
         private System.Windows.Forms.Label lblConnectionMessage;
@@ -507,14 +447,11 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnColumns;
         private System.Windows.Forms.Button btnExport;
-        private System.Windows.Forms.CheckBox chkShowAdvancedFilters;
         private System.Windows.Forms.Panel pnlAdvancedFilters;
         private System.Windows.Forms.Label lblFilterTable;
         private System.Windows.Forms.TextBox txtFilterTable;
         private System.Windows.Forms.Label lblFilterAttribute;
         private System.Windows.Forms.TextBox txtFilterAttribute;
-        private System.Windows.Forms.Label lblFilterSchema;
-        private System.Windows.Forms.TextBox txtFilterSchema;
         private System.Windows.Forms.Label lblFilterType;
         private System.Windows.Forms.ComboBox cboFilterType;
         private System.Windows.Forms.Label lblFilterRequired;
