@@ -36,19 +36,26 @@ namespace AttributeExporterXrmToolBoxPlugin
 
         private void AttributeExporterControl_Load(object sender, EventArgs e)
         {
-            // The OnConnectionUpdated event is a better place for this
-            // but this is a fallback for the initial load.
-            if (Service != null)
-            {
-                LoadSolutions();
-            }
+            UpdateConnectionState();
         }
 
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
+            UpdateConnectionState();
+        }
 
-            if (Service != null)
+        private void UpdateConnectionState()
+        {
+            bool hasConnection = Service != null;
+
+            // Update export button state
+            btnExport.Enabled = hasConnection && _allAttributes.Count > 0;
+
+            // Show/hide connection message (informational only)
+            lblConnectionMessage.Visible = !hasConnection;
+
+            if (hasConnection)
             {
                 LoadSolutions();
             }
@@ -217,6 +224,11 @@ namespace AttributeExporterXrmToolBoxPlugin
         }
 
         private void btnLoadAttributes_Click(object sender, EventArgs e)
+        {
+            ExecuteMethod(LoadAttributesInternal);
+        }
+
+        private void LoadAttributesInternal()
         {
             if (rdoAllEntities.Checked)
             {
@@ -439,6 +451,11 @@ namespace AttributeExporterXrmToolBoxPlugin
         }
 
         private void btnExport_Click(object sender, EventArgs e)
+        {
+            ExecuteMethod(ExportInternal);
+        }
+
+        private void ExportInternal()
         {
             if (_allAttributes.Count == 0)
             {

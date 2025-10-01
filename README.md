@@ -38,7 +38,21 @@ Export all metadata properties for attributes across your entire environment or 
 - **.NET Framework 4.8** (installed with Windows 10/11)
 - **Dataverse/Dynamics 365 environment** with sufficient read permissions
 
-### Option 1: Using Deploy Script (Recommended for Development)
+### Option 1: Install from XRM ToolBox (Recommended)
+1. Open XRM ToolBox
+2. Click **Tool Library** (or press Ctrl+T)
+3. Search for "Attribute Metadata Exporter"
+4. Click **Install**
+5. Restart XRM ToolBox
+6. Launch from **Tools** menu
+
+### Option 2: Install from NuGet Package
+1. Download the latest `.nupkg` from [Releases](https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin/releases)
+2. In XRM ToolBox, go to **Plugins Store** → **Install from disk**
+3. Select the downloaded `.nupkg` file
+4. Restart XRM ToolBox
+
+### Option 3: Manual Installation (Development)
 ```powershell
 # Clone repository
 git clone https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin.git
@@ -47,23 +61,6 @@ cd AttributeExporterXrmToolBoxPlugin
 # Build and deploy
 .\deploy.ps1 -Force
 ```
-
-The deploy script will:
-- Close XRM ToolBox if running
-- Build the plugin
-- Copy files to `%APPDATA%\MscrmTools\XrmToolBox\Plugins\`
-- Clean old plugin files from OneDrive locations
-- Verify deployment
-
-### Option 2: Manual Installation
-1. Download the latest release or build from source
-2. Copy these files to `%APPDATA%\MscrmTools\XrmToolBox\Plugins\`:
-   - `AttributeExporterXrmToolBoxPlugin.dll`
-   - `CsvHelper.dll`
-   - `Microsoft.Bcl.AsyncInterfaces.dll`
-   - `System.Threading.Tasks.Extensions.dll`
-3. Restart XRM ToolBox
-4. Look for "Attribute Metadata Exporter" in the Tools menu
 
 ## Usage
 
@@ -309,7 +306,6 @@ MIT License - see LICENSE file for details.
 ## Author
 
 **Samuel Hurley** - [HurleySk](https://github.com/HurleySk)
-Procentrix, Inc.
 
 ## Acknowledgments
 
@@ -319,13 +315,16 @@ Procentrix, Inc.
 
 ## Version History
 
-### v1.0.0 (Current)
-- ✅ All Entities and Solution-based export
-- ✅ 40+ metadata columns with 7 categories
-- ✅ 4 column presets + custom configuration
-- ✅ Drag-drop column reordering
-- ✅ Sortable columns
-- ✅ Search & filter
-- ✅ Smart TypeSpecificDetails column
-- ✅ Persistent column configuration
-- ✅ CSV export with configurable columns
+### v1.0.0 (2025-10-01)
+**Initial Release**
+- Export attributes from all entities or specific solutions
+- 40+ metadata columns organized into 7 categories
+- 4 column presets (Basic, Standard, Advanced, Full) + custom configuration
+- Drag-drop column reordering and resizing
+- Real-time search and filtering
+- Sortable columns with persistent sort state
+- Smart type-specific details column
+- CSV export with configurable columns
+- Persistent user preferences
+- Full XRM ToolBox plugin store compliance
+- ExecuteMethod pattern for automatic connection prompts

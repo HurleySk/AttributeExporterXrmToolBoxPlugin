@@ -15,14 +15,20 @@
     <Version>1.0.0</Version>
     <Authors>Samuel Hurley</Authors>
     <Company>Samuel Hurley</Company>
+    <Copyright>Copyright (c) Samuel Hurley 2025</Copyright>
     <Description>XRM ToolBox Plugin for exporting attribute metadata to CSV with advanced column management</Description>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <BuildOutputTargetFolder>Plugins</BuildOutputTargetFolder>
 
     <!-- NuGet Package Metadata -->
     <PackageProjectUrl>https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin</PackageProjectUrl>
     <PackageIcon>icon-128.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>XrmToolBox;Dynamics365;Dataverse;PowerPlatform;Metadata;Export;CSV</PackageTags>
+    <PackageReleaseNotes>Initial release: Export Dataverse attribute metadata to CSV with 40+ metadata columns, customizable column presets, drag-drop reordering, search/filter, and persistent user preferences.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -54,6 +60,7 @@
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
     <None Include="Resources\icon-128.png" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

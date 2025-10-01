@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Attribute Metadata Exporter")]
 [assembly: AssemblyDescription("XRM ToolBox Plugin for exporting attribute metadata to CSV")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Procentrix")]
+[assembly: AssemblyCompany("Samuel Hurley")]
 [assembly: AssemblyProduct("AttributeExporterXrmToolBoxPlugin")]
-[assembly: AssemblyCopyright("Copyright © 2024 Samuel Hurley")]
+[assembly: AssemblyCopyright("Copyright © 2025 Samuel Hurley")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

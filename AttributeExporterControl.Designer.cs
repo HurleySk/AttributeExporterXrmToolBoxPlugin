@@ -41,6 +41,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.lblSearch = new System.Windows.Forms.Label();
             this.lblAttributeCount = new System.Windows.Forms.Label();
             this.dgvAttributes = new System.Windows.Forms.DataGridView();
+            this.lblConnectionMessage = new System.Windows.Forms.Label();
             this.grpActions = new System.Windows.Forms.GroupBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnColumns = new System.Windows.Forms.Button();
@@ -143,6 +144,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpAttributes.Controls.Add(this.lblSearch);
             this.grpAttributes.Controls.Add(this.lblAttributeCount);
             this.grpAttributes.Controls.Add(this.dgvAttributes);
+            this.grpAttributes.Controls.Add(this.lblConnectionMessage);
             this.grpAttributes.Location = new System.Drawing.Point(12, 118);
             this.grpAttributes.Name = "grpAttributes";
             this.grpAttributes.Size = new System.Drawing.Size(960, 380);
@@ -201,7 +203,21 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.dgvAttributes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvAttributes.Size = new System.Drawing.Size(920, 290);
             this.dgvAttributes.TabIndex = 0;
-            // 
+            //
+            // lblConnectionMessage
+            //
+            this.lblConnectionMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblConnectionMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblConnectionMessage.ForeColor = System.Drawing.Color.DarkOrange;
+            this.lblConnectionMessage.Location = new System.Drawing.Point(300, 23);
+            this.lblConnectionMessage.Name = "lblConnectionMessage";
+            this.lblConnectionMessage.Size = new System.Drawing.Size(400, 20);
+            this.lblConnectionMessage.TabIndex = 5;
+            this.lblConnectionMessage.Text = "⚠ Not connected - Click Load Attributes to connect";
+            this.lblConnectionMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblConnectionMessage.Visible = false;
+            //
             // grpActions
             // 
             this.grpActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
@@ -285,6 +301,7 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.Label lblSearch;
         private System.Windows.Forms.Label lblAttributeCount;
         private System.Windows.Forms.DataGridView dgvAttributes;
+        private System.Windows.Forms.Label lblConnectionMessage;
         private System.Windows.Forms.GroupBox grpActions;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnColumns;
