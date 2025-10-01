@@ -36,6 +36,23 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.lblSolution = new System.Windows.Forms.Label();
             this.cboSolutions = new System.Windows.Forms.ComboBox();
             this.grpAttributes = new System.Windows.Forms.GroupBox();
+            this.chkShowAdvancedFilters = new System.Windows.Forms.CheckBox();
+            this.pnlAdvancedFilters = new System.Windows.Forms.Panel();
+            this.lblFilterTable = new System.Windows.Forms.Label();
+            this.txtFilterTable = new System.Windows.Forms.TextBox();
+            this.lblFilterAttribute = new System.Windows.Forms.Label();
+            this.txtFilterAttribute = new System.Windows.Forms.TextBox();
+            this.lblFilterSchema = new System.Windows.Forms.Label();
+            this.txtFilterSchema = new System.Windows.Forms.TextBox();
+            this.lblFilterType = new System.Windows.Forms.Label();
+            this.cboFilterType = new System.Windows.Forms.ComboBox();
+            this.lblFilterRequired = new System.Windows.Forms.Label();
+            this.cboFilterRequired = new System.Windows.Forms.ComboBox();
+            this.lblFilterCustom = new System.Windows.Forms.Label();
+            this.cboFilterCustom = new System.Windows.Forms.ComboBox();
+            this.lblFilterPrimaryId = new System.Windows.Forms.Label();
+            this.cboFilterPrimaryId = new System.Windows.Forms.ComboBox();
+            this.btnClearFilters = new System.Windows.Forms.Button();
             this.lblFilterStatus = new System.Windows.Forms.Label();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.lblSearch = new System.Windows.Forms.Label();
@@ -48,6 +65,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.btnExport = new System.Windows.Forms.Button();
             this.grpSolution.SuspendLayout();
             this.grpAttributes.SuspendLayout();
+            this.pnlAdvancedFilters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAttributes)).BeginInit();
             this.grpActions.SuspendLayout();
             this.SuspendLayout();
@@ -139,6 +157,8 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpAttributes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpAttributes.Controls.Add(this.chkShowAdvancedFilters);
+            this.grpAttributes.Controls.Add(this.pnlAdvancedFilters);
             this.grpAttributes.Controls.Add(this.lblFilterStatus);
             this.grpAttributes.Controls.Add(this.txtSearch);
             this.grpAttributes.Controls.Add(this.lblSearch);
@@ -151,7 +171,186 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpAttributes.TabIndex = 1;
             this.grpAttributes.TabStop = false;
             this.grpAttributes.Text = "Attributes";
-            // 
+            //
+            // chkShowAdvancedFilters
+            //
+            this.chkShowAdvancedFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkShowAdvancedFilters.AutoSize = true;
+            this.chkShowAdvancedFilters.Location = new System.Drawing.Point(780, 22);
+            this.chkShowAdvancedFilters.Name = "chkShowAdvancedFilters";
+            this.chkShowAdvancedFilters.Size = new System.Drawing.Size(160, 17);
+            this.chkShowAdvancedFilters.TabIndex = 6;
+            this.chkShowAdvancedFilters.Text = "Show Advanced Filters";
+            this.chkShowAdvancedFilters.UseVisualStyleBackColor = true;
+            this.chkShowAdvancedFilters.CheckedChanged += new System.EventHandler(this.chkShowAdvancedFilters_CheckedChanged);
+            //
+            // pnlAdvancedFilters
+            //
+            this.pnlAdvancedFilters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlAdvancedFilters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlAdvancedFilters.Controls.Add(this.lblFilterTable);
+            this.pnlAdvancedFilters.Controls.Add(this.txtFilterTable);
+            this.pnlAdvancedFilters.Controls.Add(this.lblFilterAttribute);
+            this.pnlAdvancedFilters.Controls.Add(this.txtFilterAttribute);
+            this.pnlAdvancedFilters.Controls.Add(this.lblFilterType);
+            this.pnlAdvancedFilters.Controls.Add(this.cboFilterType);
+            this.pnlAdvancedFilters.Controls.Add(this.lblFilterRequired);
+            this.pnlAdvancedFilters.Controls.Add(this.cboFilterRequired);
+            this.pnlAdvancedFilters.Controls.Add(this.lblFilterCustom);
+            this.pnlAdvancedFilters.Controls.Add(this.cboFilterCustom);
+            this.pnlAdvancedFilters.Controls.Add(this.lblFilterPrimaryId);
+            this.pnlAdvancedFilters.Controls.Add(this.cboFilterPrimaryId);
+            this.pnlAdvancedFilters.Controls.Add(this.lblFilterSchema);
+            this.pnlAdvancedFilters.Controls.Add(this.txtFilterSchema);
+            this.pnlAdvancedFilters.Controls.Add(this.btnClearFilters);
+            this.pnlAdvancedFilters.Location = new System.Drawing.Point(20, 45);
+            this.pnlAdvancedFilters.Name = "pnlAdvancedFilters";
+            this.pnlAdvancedFilters.Size = new System.Drawing.Size(920, 65);
+            this.pnlAdvancedFilters.TabIndex = 7;
+            this.pnlAdvancedFilters.Visible = false;
+            //
+            // lblFilterTable
+            //
+            this.lblFilterTable.AutoSize = true;
+            this.lblFilterTable.Location = new System.Drawing.Point(5, 8);
+            this.lblFilterTable.Name = "lblFilterTable";
+            this.lblFilterTable.Size = new System.Drawing.Size(37, 13);
+            this.lblFilterTable.TabIndex = 0;
+            this.lblFilterTable.Text = "Table:";
+            //
+            // txtFilterTable
+            //
+            this.txtFilterTable.Location = new System.Drawing.Point(50, 5);
+            this.txtFilterTable.Name = "txtFilterTable";
+            this.txtFilterTable.Size = new System.Drawing.Size(140, 20);
+            this.txtFilterTable.TabIndex = 1;
+            this.txtFilterTable.TextChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
+            // lblFilterAttribute
+            //
+            this.lblFilterAttribute.AutoSize = true;
+            this.lblFilterAttribute.Location = new System.Drawing.Point(200, 8);
+            this.lblFilterAttribute.Name = "lblFilterAttribute";
+            this.lblFilterAttribute.Size = new System.Drawing.Size(54, 13);
+            this.lblFilterAttribute.TabIndex = 2;
+            this.lblFilterAttribute.Text = "Attribute:";
+            //
+            // txtFilterAttribute
+            //
+            this.txtFilterAttribute.Location = new System.Drawing.Point(260, 5);
+            this.txtFilterAttribute.Name = "txtFilterAttribute";
+            this.txtFilterAttribute.Size = new System.Drawing.Size(140, 20);
+            this.txtFilterAttribute.TabIndex = 3;
+            this.txtFilterAttribute.TextChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
+            // lblFilterType
+            //
+            this.lblFilterType.AutoSize = true;
+            this.lblFilterType.Location = new System.Drawing.Point(410, 8);
+            this.lblFilterType.Name = "lblFilterType";
+            this.lblFilterType.Size = new System.Drawing.Size(34, 13);
+            this.lblFilterType.TabIndex = 4;
+            this.lblFilterType.Text = "Type:";
+            //
+            // cboFilterType
+            //
+            this.cboFilterType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFilterType.FormattingEnabled = true;
+            this.cboFilterType.Location = new System.Drawing.Point(450, 5);
+            this.cboFilterType.Name = "cboFilterType";
+            this.cboFilterType.Size = new System.Drawing.Size(120, 21);
+            this.cboFilterType.TabIndex = 5;
+            this.cboFilterType.SelectedIndexChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
+            // lblFilterRequired
+            //
+            this.lblFilterRequired.AutoSize = true;
+            this.lblFilterRequired.Location = new System.Drawing.Point(5, 38);
+            this.lblFilterRequired.Name = "lblFilterRequired";
+            this.lblFilterRequired.Size = new System.Drawing.Size(56, 13);
+            this.lblFilterRequired.TabIndex = 6;
+            this.lblFilterRequired.Text = "Required:";
+            //
+            // cboFilterRequired
+            //
+            this.cboFilterRequired.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFilterRequired.FormattingEnabled = true;
+            this.cboFilterRequired.Items.AddRange(new object[] { "All", "Yes", "No" });
+            this.cboFilterRequired.Location = new System.Drawing.Point(70, 35);
+            this.cboFilterRequired.Name = "cboFilterRequired";
+            this.cboFilterRequired.Size = new System.Drawing.Size(80, 21);
+            this.cboFilterRequired.TabIndex = 7;
+            this.cboFilterRequired.SelectedIndexChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
+            // lblFilterCustom
+            //
+            this.lblFilterCustom.AutoSize = true;
+            this.lblFilterCustom.Location = new System.Drawing.Point(160, 38);
+            this.lblFilterCustom.Name = "lblFilterCustom";
+            this.lblFilterCustom.Size = new System.Drawing.Size(48, 13);
+            this.lblFilterCustom.TabIndex = 8;
+            this.lblFilterCustom.Text = "Custom:";
+            //
+            // cboFilterCustom
+            //
+            this.cboFilterCustom.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFilterCustom.FormattingEnabled = true;
+            this.cboFilterCustom.Items.AddRange(new object[] { "All", "Yes", "No" });
+            this.cboFilterCustom.Location = new System.Drawing.Point(215, 35);
+            this.cboFilterCustom.Name = "cboFilterCustom";
+            this.cboFilterCustom.Size = new System.Drawing.Size(80, 21);
+            this.cboFilterCustom.TabIndex = 9;
+            this.cboFilterCustom.SelectedIndexChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
+            // lblFilterPrimaryId
+            //
+            this.lblFilterPrimaryId.AutoSize = true;
+            this.lblFilterPrimaryId.Location = new System.Drawing.Point(305, 38);
+            this.lblFilterPrimaryId.Name = "lblFilterPrimaryId";
+            this.lblFilterPrimaryId.Size = new System.Drawing.Size(64, 13);
+            this.lblFilterPrimaryId.TabIndex = 10;
+            this.lblFilterPrimaryId.Text = "Primary ID:";
+            //
+            // cboFilterPrimaryId
+            //
+            this.cboFilterPrimaryId.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFilterPrimaryId.FormattingEnabled = true;
+            this.cboFilterPrimaryId.Items.AddRange(new object[] { "All", "Yes", "No" });
+            this.cboFilterPrimaryId.Location = new System.Drawing.Point(375, 35);
+            this.cboFilterPrimaryId.Name = "cboFilterPrimaryId";
+            this.cboFilterPrimaryId.Size = new System.Drawing.Size(80, 21);
+            this.cboFilterPrimaryId.TabIndex = 11;
+            this.cboFilterPrimaryId.SelectedIndexChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
+            // lblFilterSchema
+            //
+            this.lblFilterSchema.AutoSize = true;
+            this.lblFilterSchema.Location = new System.Drawing.Point(465, 38);
+            this.lblFilterSchema.Name = "lblFilterSchema";
+            this.lblFilterSchema.Size = new System.Drawing.Size(49, 13);
+            this.lblFilterSchema.TabIndex = 12;
+            this.lblFilterSchema.Text = "Schema:";
+            //
+            // txtFilterSchema
+            //
+            this.txtFilterSchema.Location = new System.Drawing.Point(520, 35);
+            this.txtFilterSchema.Name = "txtFilterSchema";
+            this.txtFilterSchema.Size = new System.Drawing.Size(140, 20);
+            this.txtFilterSchema.TabIndex = 13;
+            this.txtFilterSchema.TextChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
+            // btnClearFilters
+            //
+            this.btnClearFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearFilters.Location = new System.Drawing.Point(825, 20);
+            this.btnClearFilters.Name = "btnClearFilters";
+            this.btnClearFilters.Size = new System.Drawing.Size(85, 25);
+            this.btnClearFilters.TabIndex = 14;
+            this.btnClearFilters.Text = "Clear Filters";
+            this.btnClearFilters.UseVisualStyleBackColor = true;
+            this.btnClearFilters.Click += new System.EventHandler(this.btnClearFilters_Click);
+            //
             // lblFilterStatus
             //
             this.lblFilterStatus.AutoSize = true;
@@ -278,6 +477,8 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.Load += new System.EventHandler(this.AttributeExporterControl_Load);
             this.grpSolution.ResumeLayout(false);
             this.grpSolution.PerformLayout();
+            this.pnlAdvancedFilters.ResumeLayout(false);
+            this.pnlAdvancedFilters.PerformLayout();
             this.grpAttributes.ResumeLayout(false);
             this.grpAttributes.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAttributes)).EndInit();
@@ -306,5 +507,22 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnColumns;
         private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.CheckBox chkShowAdvancedFilters;
+        private System.Windows.Forms.Panel pnlAdvancedFilters;
+        private System.Windows.Forms.Label lblFilterTable;
+        private System.Windows.Forms.TextBox txtFilterTable;
+        private System.Windows.Forms.Label lblFilterAttribute;
+        private System.Windows.Forms.TextBox txtFilterAttribute;
+        private System.Windows.Forms.Label lblFilterSchema;
+        private System.Windows.Forms.TextBox txtFilterSchema;
+        private System.Windows.Forms.Label lblFilterType;
+        private System.Windows.Forms.ComboBox cboFilterType;
+        private System.Windows.Forms.Label lblFilterRequired;
+        private System.Windows.Forms.ComboBox cboFilterRequired;
+        private System.Windows.Forms.Label lblFilterCustom;
+        private System.Windows.Forms.ComboBox cboFilterCustom;
+        private System.Windows.Forms.Label lblFilterPrimaryId;
+        private System.Windows.Forms.ComboBox cboFilterPrimaryId;
+        private System.Windows.Forms.Button btnClearFilters;
     }
 }

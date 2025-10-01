@@ -32,6 +32,9 @@ namespace AttributeExporterXrmToolBoxPlugin
             // Load column configuration and build DataGridView columns
             _columnConfiguration = ColumnConfigurationService.LoadConfiguration();
             RebuildColumns(_columnConfiguration);
+
+            // Restore filter state
+            RestoreFilterState();
         }
 
         private void AttributeExporterControl_Load(object sender, EventArgs e)
@@ -294,6 +297,10 @@ namespace AttributeExporterXrmToolBoxPlugin
                     }
                     _allAttributes = (List<AttributeMetadataInfo>)args.Result;
                     _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
+
+                    // Populate filter type dropdown with distinct types from loaded data
+                    PopulateFilterTypeComboBox();
+
                     RefreshGrid();
 
                     MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from all entities",
@@ -366,6 +373,10 @@ namespace AttributeExporterXrmToolBoxPlugin
                     }
                     _allAttributes = (List<AttributeMetadataInfo>)args.Result;
                     _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
+
+                    // Populate filter type dropdown with distinct types from loaded data
+                    PopulateFilterTypeComboBox();
+
                     RefreshGrid();
 
                     MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from solution '{solution.Name}'",
@@ -483,24 +494,85 @@ namespace AttributeExporterXrmToolBoxPlugin
 
         private void ApplyFilter()
         {
-            var searchText = txtSearch.Text.Trim().ToLower();
+            var filtered = _allAttributes.AsEnumerable();
 
-            if (string.IsNullOrEmpty(searchText))
+            // Apply global search text filter (searches across all columns)
+            var searchText = txtSearch.Text.Trim().ToLower();
+            if (!string.IsNullOrEmpty(searchText))
             {
-                _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
-            }
-            else
-            {
-                _filteredAttributes = _allAttributes.Where(a =>
+                filtered = filtered.Where(a =>
                     (a.TableLogicalName?.ToLower().Contains(searchText) ?? false) ||
                     (a.TableDisplayName?.ToLower().Contains(searchText) ?? false) ||
                     (a.AttributeLogicalName?.ToLower().Contains(searchText) ?? false) ||
                     (a.AttributeDisplayName?.ToLower().Contains(searchText) ?? false) ||
                     (a.AttributeType?.ToLower().Contains(searchText) ?? false) ||
                     (a.Description?.ToLower().Contains(searchText) ?? false)
-                ).ToList();
+                );
             }
 
+            // Apply advanced filters if enabled
+            if (chkShowAdvancedFilters.Checked && _columnConfiguration?.ActiveFilters != null)
+            {
+                var filters = _columnConfiguration.ActiveFilters;
+
+                // Table name filter (searches both logical and display name)
+                if (!string.IsNullOrWhiteSpace(filters.TableName))
+                {
+                    var tableFilter = filters.TableName.ToLower();
+                    filtered = filtered.Where(a =>
+                        (a.TableLogicalName?.ToLower().Contains(tableFilter) ?? false) ||
+                        (a.TableDisplayName?.ToLower().Contains(tableFilter) ?? false)
+                    );
+                }
+
+                // Attribute name filter (searches both logical and display name)
+                if (!string.IsNullOrWhiteSpace(filters.AttributeName))
+                {
+                    var attrFilter = filters.AttributeName.ToLower();
+                    filtered = filtered.Where(a =>
+                        (a.AttributeLogicalName?.ToLower().Contains(attrFilter) ?? false) ||
+                        (a.AttributeDisplayName?.ToLower().Contains(attrFilter) ?? false)
+                    );
+                }
+
+                // Schema name filter
+                if (!string.IsNullOrWhiteSpace(filters.SchemaName))
+                {
+                    var schemaFilter = filters.SchemaName.ToLower();
+                    filtered = filtered.Where(a =>
+                        a.SchemaName?.ToLower().Contains(schemaFilter) ?? false
+                    );
+                }
+
+                // Type filter
+                if (!string.IsNullOrWhiteSpace(filters.AttributeType) && filters.AttributeType != "All")
+                {
+                    filtered = filtered.Where(a => a.AttributeType == filters.AttributeType);
+                }
+
+                // Required filter
+                if (!string.IsNullOrWhiteSpace(filters.Required) && filters.Required != "All")
+                {
+                    bool requiredValue = filters.Required == "Yes";
+                    filtered = filtered.Where(a => a.Required == requiredValue);
+                }
+
+                // IsCustom filter
+                if (!string.IsNullOrWhiteSpace(filters.IsCustom) && filters.IsCustom != "All")
+                {
+                    bool customValue = filters.IsCustom == "Yes";
+                    filtered = filtered.Where(a => a.IsCustomAttribute == customValue);
+                }
+
+                // IsPrimaryId filter
+                if (!string.IsNullOrWhiteSpace(filters.IsPrimaryId) && filters.IsPrimaryId != "All")
+                {
+                    bool primaryIdValue = filters.IsPrimaryId == "Yes";
+                    filtered = filtered.Where(a => a.IsPrimaryId == primaryIdValue);
+                }
+            }
+
+            _filteredAttributes = filtered.ToList();
             RefreshGrid();
         }
 
@@ -587,5 +659,170 @@ namespace AttributeExporterXrmToolBoxPlugin
             // In XrmToolBox, the parent tool window handles closing.
             ParentForm?.Close();
         }
+
+        #region Advanced Filter Events
+
+        private void chkShowAdvancedFilters_CheckedChanged(object sender, EventArgs e)
+        {
+            // Toggle filter panel visibility
+            pnlAdvancedFilters.Visible = chkShowAdvancedFilters.Checked;
+
+            // Save state
+            if (_columnConfiguration != null)
+            {
+                _columnConfiguration.ShowAdvancedFilters = chkShowAdvancedFilters.Checked;
+                ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+            }
+
+            // Adjust layout
+            AdjustLayoutForFilters();
+
+            // Apply filters if enabled
+            if (chkShowAdvancedFilters.Checked)
+            {
+                ApplyFilter();
+            }
+        }
+
+        private void FilterControl_Changed(object sender, EventArgs e)
+        {
+            // Update filter criteria from controls
+            if (_columnConfiguration?.ActiveFilters != null)
+            {
+                _columnConfiguration.ActiveFilters.TableName = txtFilterTable.Text;
+                _columnConfiguration.ActiveFilters.AttributeName = txtFilterAttribute.Text;
+                _columnConfiguration.ActiveFilters.SchemaName = txtFilterSchema.Text;
+                _columnConfiguration.ActiveFilters.AttributeType = cboFilterType.SelectedItem?.ToString() ?? "All";
+                _columnConfiguration.ActiveFilters.Required = cboFilterRequired.SelectedItem?.ToString() ?? "All";
+                _columnConfiguration.ActiveFilters.IsCustom = cboFilterCustom.SelectedItem?.ToString() ?? "All";
+                _columnConfiguration.ActiveFilters.IsPrimaryId = cboFilterPrimaryId.SelectedItem?.ToString() ?? "All";
+
+                // Save filter state
+                ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+
+                // Apply filters
+                ApplyFilter();
+            }
+        }
+
+        private void btnClearFilters_Click(object sender, EventArgs e)
+        {
+            // Reset all filter controls
+            txtFilterTable.Text = string.Empty;
+            txtFilterAttribute.Text = string.Empty;
+            txtFilterSchema.Text = string.Empty;
+            cboFilterType.SelectedIndex = 0; // Select "All"
+            cboFilterRequired.SelectedIndex = 0; // Select "All"
+            cboFilterCustom.SelectedIndex = 0; // Select "All"
+            cboFilterPrimaryId.SelectedIndex = 0; // Select "All"
+
+            // Reset filter criteria
+            if (_columnConfiguration?.ActiveFilters != null)
+            {
+                _columnConfiguration.ActiveFilters.Reset();
+                ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+            }
+
+            // Apply filters (which will now show all results)
+            ApplyFilter();
+        }
+
+        private void AdjustLayoutForFilters()
+        {
+            // Adjust positions based on whether filters are shown
+            int spacing = 5;
+
+            if (pnlAdvancedFilters.Visible)
+            {
+                // Filters are shown - shift everything down
+                int statusY = pnlAdvancedFilters.Bottom + spacing;
+                lblFilterStatus.Top = statusY;
+                lblAttributeCount.Top = statusY;
+
+                int gridY = statusY + lblFilterStatus.Height + spacing;
+                dgvAttributes.Top = gridY;
+                dgvAttributes.Height = grpAttributes.Height - gridY - 10;
+            }
+            else
+            {
+                // Filters are hidden - shift everything up
+                int statusY = 50;
+                lblFilterStatus.Top = statusY;
+                lblAttributeCount.Top = statusY;
+
+                int gridY = statusY + lblFilterStatus.Height + spacing;
+                dgvAttributes.Top = gridY;
+                dgvAttributes.Height = grpAttributes.Height - gridY - 10;
+            }
+        }
+
+        private void PopulateFilterTypeComboBox()
+        {
+            // Get distinct attribute types from loaded data
+            var distinctTypes = _allAttributes
+                .Select(a => a.AttributeType)
+                .Where(t => !string.IsNullOrEmpty(t))
+                .Distinct()
+                .OrderBy(t => t)
+                .ToList();
+
+            cboFilterType.Items.Clear();
+            cboFilterType.Items.Add("All");
+            foreach (var type in distinctTypes)
+            {
+                cboFilterType.Items.Add(type);
+            }
+            cboFilterType.SelectedIndex = 0;
+        }
+
+        private void RestoreFilterState()
+        {
+            // Restore filter visibility
+            chkShowAdvancedFilters.Checked = _columnConfiguration.ShowAdvancedFilters;
+            pnlAdvancedFilters.Visible = _columnConfiguration.ShowAdvancedFilters;
+
+            // Restore filter values
+            if (_columnConfiguration.ActiveFilters != null)
+            {
+                txtFilterTable.Text = _columnConfiguration.ActiveFilters.TableName ?? string.Empty;
+                txtFilterAttribute.Text = _columnConfiguration.ActiveFilters.AttributeName ?? string.Empty;
+                txtFilterSchema.Text = _columnConfiguration.ActiveFilters.SchemaName ?? string.Empty;
+
+                // Set combo box values
+                SetComboBoxValue(cboFilterType, _columnConfiguration.ActiveFilters.AttributeType);
+                SetComboBoxValue(cboFilterRequired, _columnConfiguration.ActiveFilters.Required);
+                SetComboBoxValue(cboFilterCustom, _columnConfiguration.ActiveFilters.IsCustom);
+                SetComboBoxValue(cboFilterPrimaryId, _columnConfiguration.ActiveFilters.IsPrimaryId);
+            }
+
+            // Initialize default values for combo boxes if not set
+            if (cboFilterRequired.SelectedIndex == -1) cboFilterRequired.SelectedIndex = 0;
+            if (cboFilterCustom.SelectedIndex == -1) cboFilterCustom.SelectedIndex = 0;
+            if (cboFilterPrimaryId.SelectedIndex == -1) cboFilterPrimaryId.SelectedIndex = 0;
+
+            AdjustLayoutForFilters();
+        }
+
+        private void SetComboBoxValue(ComboBox comboBox, string value)
+        {
+            if (string.IsNullOrEmpty(value) || value == "All")
+            {
+                comboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                int index = comboBox.Items.IndexOf(value);
+                if (index >= 0)
+                {
+                    comboBox.SelectedIndex = index;
+                }
+                else
+                {
+                    comboBox.SelectedIndex = 0;
+                }
+            }
+        }
+
+        #endregion
     }
 }
