@@ -12,7 +12,8 @@
 
     <AssemblyName>AttributeExporterXrmToolBoxPlugin</AssemblyName>
     <RootNamespace>AttributeExporterXrmToolBoxPlugin</RootNamespace>
-    <PackageId>Attribute Metadata Exporter</PackageId>
+    <PackageId>AttributeMetadataExporter</PackageId>
+    <Title>Attribute Metadata Exporter</Title>
     <Version>2.0.0.1</Version>
     <Authors>Samuel Hurley</Authors>
     <Company>Procentrix</Company>
