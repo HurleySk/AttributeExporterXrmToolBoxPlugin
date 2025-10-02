@@ -12,11 +12,12 @@
 
     <AssemblyName>AttributeExporterXrmToolBoxPlugin</AssemblyName>
     <RootNamespace>AttributeExporterXrmToolBoxPlugin</RootNamespace>
-    <Version>2.0.0</Version>
+    <PackageId>Attribute Metadata Exporter</PackageId>
+    <Version>2.0.0.1</Version>
     <Authors>Samuel Hurley</Authors>
-    <Company>Samuel Hurley</Company>
+    <Company>Procentrix</Company>
     <Copyright>Copyright (c) Samuel Hurley 2025</Copyright>
-    <Description>XRM ToolBox Plugin for exporting attribute metadata to CSV with advanced column management</Description>
+    <Description>XRM ToolBox Plugin for browsing and exporting attribute metadata to CSV with advanced column management</Description>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <!-- Suppress framework folder in package -->
