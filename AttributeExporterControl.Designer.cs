@@ -49,6 +49,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.cboFilterCustom = new System.Windows.Forms.ComboBox();
             this.lblFilterPrimaryId = new System.Windows.Forms.Label();
             this.cboFilterPrimaryId = new System.Windows.Forms.ComboBox();
+            this.chkExcludeIntersect = new System.Windows.Forms.CheckBox();
             this.btnClearFilters = new System.Windows.Forms.Button();
             this.lblFilterStatus = new System.Windows.Forms.Label();
             this.lblAttributeCount = new System.Windows.Forms.Label();
@@ -56,6 +57,12 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.cmsGridContext = new System.Windows.Forms.ContextMenuStrip();
             this.tsmCopyCells = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmCopyFullRows = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsmColumnOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmsColumnHeaderContext = new System.Windows.Forms.ContextMenuStrip();
+            this.tsmHideColumn = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsmColumnOptionsHeader = new System.Windows.Forms.ToolStripMenuItem();
             this.lblConnectionMessage = new System.Windows.Forms.Label();
             this.grpActions = new System.Windows.Forms.GroupBox();
             this.btnClose = new System.Windows.Forms.Button();
@@ -66,6 +73,8 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpAttributes.SuspendLayout();
             this.pnlAdvancedFilters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAttributes)).BeginInit();
+            this.cmsGridContext.SuspendLayout();
+            this.cmsColumnHeaderContext.SuspendLayout();
             this.grpActions.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -186,6 +195,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.pnlAdvancedFilters.Controls.Add(this.cboFilterCustom);
             this.pnlAdvancedFilters.Controls.Add(this.lblFilterPrimaryId);
             this.pnlAdvancedFilters.Controls.Add(this.cboFilterPrimaryId);
+            this.pnlAdvancedFilters.Controls.Add(this.chkExcludeIntersect);
             this.pnlAdvancedFilters.Controls.Add(this.btnClearFilters);
             this.pnlAdvancedFilters.Location = new System.Drawing.Point(20, 20);
             this.pnlAdvancedFilters.Name = "pnlAdvancedFilters";
@@ -306,6 +316,17 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.cboFilterPrimaryId.TabIndex = 11;
             this.cboFilterPrimaryId.SelectedIndexChanged += new System.EventHandler(this.FilterControl_Changed);
             //
+            // chkExcludeIntersect
+            //
+            this.chkExcludeIntersect.AutoSize = true;
+            this.chkExcludeIntersect.Location = new System.Drawing.Point(470, 37);
+            this.chkExcludeIntersect.Name = "chkExcludeIntersect";
+            this.chkExcludeIntersect.Size = new System.Drawing.Size(130, 17);
+            this.chkExcludeIntersect.TabIndex = 12;
+            this.chkExcludeIntersect.Text = "Exclude N:N Tables";
+            this.chkExcludeIntersect.UseVisualStyleBackColor = true;
+            this.chkExcludeIntersect.CheckedChanged += new System.EventHandler(this.FilterControl_Changed);
+            //
             // btnClearFilters
             //
             this.btnClearFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -322,9 +343,9 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.lblFilterStatus.AutoSize = true;
             this.lblFilterStatus.Location = new System.Drawing.Point(20, 93);
             this.lblFilterStatus.Name = "lblFilterStatus";
-            this.lblFilterStatus.Size = new System.Drawing.Size(89, 13);
+            this.lblFilterStatus.Size = new System.Drawing.Size(150, 13);
             this.lblFilterStatus.TabIndex = 4;
-            this.lblFilterStatus.Text = "Total Attributes: 0";
+            this.lblFilterStatus.Text = "Showing: 0 of 0 Total";
             //
             // lblAttributeCount
             //
@@ -350,14 +371,17 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.dgvAttributes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvAttributes.Size = new System.Drawing.Size(920, 247);
             this.dgvAttributes.TabIndex = 0;
+            this.dgvAttributes.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvAttributes_ColumnHeaderMouseClick);
             //
             // cmsGridContext
             //
             this.cmsGridContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmCopyCells,
-            this.tsmCopyFullRows});
+            this.tsmCopyFullRows,
+            this.toolStripSeparator1,
+            this.tsmColumnOptions});
             this.cmsGridContext.Name = "cmsGridContext";
-            this.cmsGridContext.Size = new System.Drawing.Size(181, 48);
+            this.cmsGridContext.Size = new System.Drawing.Size(181, 76);
             this.cmsGridContext.Opening += new System.ComponentModel.CancelEventHandler(this.cmsGridContext_Opening);
             //
             // tsmCopyCells
@@ -373,6 +397,46 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.tsmCopyFullRows.Size = new System.Drawing.Size(180, 22);
             this.tsmCopyFullRows.Text = "Copy Full Row(s)";
             this.tsmCopyFullRows.Click += new System.EventHandler(this.tsmCopyFullRows_Click);
+            //
+            // toolStripSeparator1
+            //
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            //
+            // tsmColumnOptions
+            //
+            this.tsmColumnOptions.Name = "tsmColumnOptions";
+            this.tsmColumnOptions.Size = new System.Drawing.Size(180, 22);
+            this.tsmColumnOptions.Text = "Column Options...";
+            this.tsmColumnOptions.Click += new System.EventHandler(this.tsmColumnOptions_Click);
+            //
+            // cmsColumnHeaderContext
+            //
+            this.cmsColumnHeaderContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmHideColumn,
+            this.toolStripSeparator2,
+            this.tsmColumnOptionsHeader});
+            this.cmsColumnHeaderContext.Name = "cmsColumnHeaderContext";
+            this.cmsColumnHeaderContext.Size = new System.Drawing.Size(170, 54);
+            //
+            // tsmHideColumn
+            //
+            this.tsmHideColumn.Name = "tsmHideColumn";
+            this.tsmHideColumn.Size = new System.Drawing.Size(169, 22);
+            this.tsmHideColumn.Text = "Hide Column";
+            this.tsmHideColumn.Click += new System.EventHandler(this.tsmHideColumn_Click);
+            //
+            // toolStripSeparator2
+            //
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(166, 6);
+            //
+            // tsmColumnOptionsHeader
+            //
+            this.tsmColumnOptionsHeader.Name = "tsmColumnOptionsHeader";
+            this.tsmColumnOptionsHeader.Size = new System.Drawing.Size(169, 22);
+            this.tsmColumnOptionsHeader.Text = "Column Options...";
+            this.tsmColumnOptionsHeader.Click += new System.EventHandler(this.tsmColumnOptions_Click);
             //
             // lblConnectionMessage
             //
@@ -466,6 +530,8 @@ namespace AttributeExporterXrmToolBoxPlugin
             this.grpAttributes.ResumeLayout(false);
             this.grpAttributes.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAttributes)).EndInit();
+            this.cmsGridContext.ResumeLayout(false);
+            this.cmsColumnHeaderContext.ResumeLayout(false);
             this.grpActions.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -503,9 +569,16 @@ namespace AttributeExporterXrmToolBoxPlugin
         private System.Windows.Forms.ComboBox cboFilterCustom;
         private System.Windows.Forms.Label lblFilterPrimaryId;
         private System.Windows.Forms.ComboBox cboFilterPrimaryId;
+        private System.Windows.Forms.CheckBox chkExcludeIntersect;
         private System.Windows.Forms.Button btnClearFilters;
         private System.Windows.Forms.ContextMenuStrip cmsGridContext;
         private System.Windows.Forms.ToolStripMenuItem tsmCopyCells;
         private System.Windows.Forms.ToolStripMenuItem tsmCopyFullRows;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem tsmColumnOptions;
+        private System.Windows.Forms.ContextMenuStrip cmsColumnHeaderContext;
+        private System.Windows.Forms.ToolStripMenuItem tsmHideColumn;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem tsmColumnOptionsHeader;
     }
 }

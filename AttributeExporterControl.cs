@@ -8,6 +8,7 @@ using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace AttributeExporterXrmToolBoxPlugin
         private int _selectionAnchorRow = -1; // Tracks the anchor row for Shift+Click selection
         private bool _attributesLoaded = false;
         private string _lastLoadedState = null; // Tracks what was last loaded (solution ID or "AllEntities")
+        private BindingSource _bindingSource; // Enables sorting support for DataGridView
+        private int _rightClickedColumnIndex = -1; // Tracks which column header was right-clicked
 
         public AttributeExporterControl()
         {
@@ -32,6 +35,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             _allAttributes = new List<AttributeMetadataInfo>();
             _filteredAttributes = new List<AttributeMetadataInfo>();
             _solutions = new List<Models.SolutionInfo>();
+            _bindingSource = new BindingSource();
 
             // Load column configuration and build DataGridView columns
             _columnConfiguration = ColumnConfigurationService.LoadConfiguration();
@@ -180,6 +184,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             dgvAttributes.CellMouseDown -= dgvAttributes_CellMouseDown;
             dgvAttributes.CellDoubleClick -= dgvAttributes_CellDoubleClick;
             dgvAttributes.SelectionChanged -= dgvAttributes_SelectionChanged;
+            dgvAttributes.MouseDown -= dgvAttributes_MouseDown;
 
             // Clear existing columns
             dgvAttributes.Columns.Clear();
@@ -212,27 +217,10 @@ namespace AttributeExporterXrmToolBoxPlugin
             dgvAttributes.CellMouseDown += dgvAttributes_CellMouseDown;
             dgvAttributes.CellDoubleClick += dgvAttributes_CellDoubleClick;
             dgvAttributes.SelectionChanged += dgvAttributes_SelectionChanged;
+            dgvAttributes.MouseDown += dgvAttributes_MouseDown;
 
-            // Restore sort state if available
-            // Note: We don't programmatically sort here because DataGridView.Sort() requires IBindingList
-            // The sort glyph and state will be restored when user clicks a column header
-            if (!string.IsNullOrEmpty(config.LastSortColumn))
-            {
-                var sortColumn = dgvAttributes.Columns[config.LastSortColumn];
-                if (sortColumn != null && dgvAttributes.DataSource != null)
-                {
-                    // If we need to restore sort, re-apply it to the data source itself
-                    var sortedData = _allAttributes.AsEnumerable();
-                    var prop = typeof(AttributeMetadataInfo).GetProperty(config.LastSortColumn);
-                    if (prop != null)
-                    {
-                        sortedData = config.LastSortAscending
-                            ? sortedData.OrderBy(x => prop.GetValue(x))
-                            : sortedData.OrderByDescending(x => prop.GetValue(x));
-                        dgvAttributes.DataSource = sortedData.ToList();
-                    }
-                }
-            }
+            // Sort state will be restored automatically when data is loaded and RefreshGrid is called
+            // The BindingList/BindingSource now supports proper sorting via column headers
         }
 
         private void dgvAttributes_ColumnDisplayIndexChanged(object sender, DataGridViewColumnEventArgs e)
@@ -752,6 +740,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 IsPrimaryName = attribute.IsPrimaryName,
                 IsLogical = attribute.IsLogical,
                 AttributeOf = attribute.AttributeOf,
+                IsIntersectEntity = entity.IsIntersect,
 
                 // Validity Flags
                 IsValidForCreate = attribute.IsValidForCreate,
@@ -866,6 +855,12 @@ namespace AttributeExporterXrmToolBoxPlugin
                     bool primaryIdValue = filters.IsPrimaryId == "Yes";
                     filtered = filtered.Where(a => a.IsPrimaryId == primaryIdValue);
                 }
+
+                // ExcludeIntersectEntities filter
+                if (filters.ExcludeIntersectEntities)
+                {
+                    filtered = filtered.Where(a => a.IsIntersectEntity != true);
+                }
             }
 
             _filteredAttributes = filtered.ToList();
@@ -874,9 +869,12 @@ namespace AttributeExporterXrmToolBoxPlugin
 
         private void RefreshGrid()
         {
-            dgvAttributes.DataSource = null;
-            dgvAttributes.DataSource = _filteredAttributes;
-            lblFilterStatus.Text = $"Total Attributes: {_allAttributes.Count}";
+            // Use SortableBindingList to enable proper sorting support
+            var sortableList = new SortableBindingList<AttributeMetadataInfo>(_filteredAttributes);
+            _bindingSource.DataSource = sortableList;
+            dgvAttributes.DataSource = _bindingSource;
+
+            lblFilterStatus.Text = $"Showing: {_filteredAttributes.Count} of {_allAttributes.Count} Total";
             lblAttributeCount.Text = "Selected Attributes: 0";
             btnExport.Enabled = _filteredAttributes.Count > 0;
         }
@@ -974,6 +972,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 _columnConfiguration.ActiveFilters.Required = cboFilterRequired.SelectedItem?.ToString() ?? "All";
                 _columnConfiguration.ActiveFilters.IsCustom = cboFilterCustom.SelectedItem?.ToString() ?? "All";
                 _columnConfiguration.ActiveFilters.IsPrimaryId = cboFilterPrimaryId.SelectedItem?.ToString() ?? "All";
+                _columnConfiguration.ActiveFilters.ExcludeIntersectEntities = chkExcludeIntersect.Checked;
 
                 // Filters are not persisted to disk - only active during session
 
@@ -992,6 +991,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             // Reset all filter controls
             txtFilterTable.Text = string.Empty;
             txtFilterAttribute.Text = string.Empty;
+            chkExcludeIntersect.Checked = false;
 
             // Only set combo box if it has items
             if (cboFilterType.Items.Count > 0)
@@ -1089,15 +1089,27 @@ namespace AttributeExporterXrmToolBoxPlugin
 
         private void cmsGridContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // Update menu item text based on selection count
+            // Check if any cells are selected
             int selectedCellCount = dgvAttributes.SelectedCells.Count;
             int selectedRowCount = dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
                 .Select(c => c.RowIndex)
                 .Distinct()
                 .Count();
 
-            tsmCopyCells.Text = selectedCellCount == 1 ? "Copy Cell" : $"Copy Cell(s) ({selectedCellCount})";
-            tsmCopyFullRows.Text = selectedRowCount == 1 ? "Copy Full Row" : $"Copy Full Row(s) ({selectedRowCount})";
+            // Show copy options only when cells are selected
+            bool hasCellsSelected = selectedCellCount > 0;
+            tsmCopyCells.Visible = hasCellsSelected;
+            tsmCopyFullRows.Visible = hasCellsSelected;
+            toolStripSeparator1.Visible = hasCellsSelected;
+
+            // Update menu item text based on selection count
+            if (hasCellsSelected)
+            {
+                tsmCopyCells.Text = selectedCellCount == 1 ? "Copy Cell" : $"Copy Cell(s) ({selectedCellCount})";
+                tsmCopyFullRows.Text = selectedRowCount == 1 ? "Copy Full Row" : $"Copy Full Row(s) ({selectedRowCount})";
+            }
+
+            // Column Options is always visible
         }
 
         private void tsmCopyCells_Click(object sender, EventArgs e)
@@ -1160,6 +1172,159 @@ namespace AttributeExporterXrmToolBoxPlugin
             }
         }
 
+        private void tsmColumnOptions_Click(object sender, EventArgs e)
+        {
+            // Open the column configuration dialog (same as Columns... button)
+            using (var dialog = new Forms.ColumnConfigurationDialog(_columnConfiguration))
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    _columnConfiguration = dialog.Configuration;
+                    ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+                    RebuildColumns(_columnConfiguration);
+                    RefreshGrid();
+                }
+            }
+        }
+
+        private void dgvAttributes_MouseDown(object sender, MouseEventArgs e)
+        {
+            // Check if right-click is on column header
+            if (e.Button == MouseButtons.Right)
+            {
+                var hitTest = dgvAttributes.HitTest(e.X, e.Y);
+
+                // Check if click is on a column header (not TopLeftHeaderCell, just ColumnHeader)
+                if (hitTest.Type == DataGridViewHitTestType.ColumnHeader && hitTest.ColumnIndex >= 0)
+                {
+                    _rightClickedColumnIndex = hitTest.ColumnIndex;
+
+                    // Prevent the grid's context menu from showing
+                    dgvAttributes.ContextMenuStrip = null;
+
+                    // Show the column header context menu at the mouse position
+                    cmsColumnHeaderContext.Show(dgvAttributes, e.Location);
+
+                    // Restore the grid's context menu after a short delay
+                    System.Threading.Tasks.Task.Delay(100).ContinueWith(_ =>
+                    {
+                        this.Invoke(new Action(() =>
+                        {
+                            dgvAttributes.ContextMenuStrip = cmsGridContext;
+                        }));
+                    });
+                }
+            }
+        }
+
+        private void dgvAttributes_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // Left clicks are handled automatically for sorting
+            // Right clicks are handled in MouseDown event
+        }
+
+        private void tsmHideColumn_Click(object sender, EventArgs e)
+        {
+            if (_rightClickedColumnIndex < 0 || _rightClickedColumnIndex >= dgvAttributes.Columns.Count)
+                return;
+
+            try
+            {
+                var columnToHide = dgvAttributes.Columns[_rightClickedColumnIndex];
+
+                // Count visible columns
+                int visibleCount = dgvAttributes.Columns.Cast<DataGridViewColumn>().Count(c => c.Visible);
+
+                // Prevent hiding the last column
+                if (visibleCount <= 1)
+                {
+                    MessageBox.Show("Cannot hide the last visible column. At least one column must remain visible.",
+                        "Cannot Hide Column", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Find the column in configuration and hide it
+                var colDef = _columnConfiguration.Columns.FirstOrDefault(c => c.Name == columnToHide.Name);
+                if (colDef != null)
+                {
+                    colDef.IsVisible = false;
+                    ColumnConfigurationService.SaveConfiguration(_columnConfiguration);
+
+                    // If hiding the sorted column, clear sort state
+                    if (dgvAttributes.SortedColumn != null && dgvAttributes.SortedColumn.Name == columnToHide.Name)
+                    {
+                        _columnConfiguration.LastSortColumn = null;
+                        _columnConfiguration.LastSortAscending = true;
+                    }
+
+                    RebuildColumns(_columnConfiguration);
+                    RefreshGrid();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error hiding column: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         #endregion
+    }
+
+    /// <summary>
+    /// Sortable BindingList implementation for DataGridView sorting support
+    /// </summary>
+    public class SortableBindingList<T> : BindingList<T>
+    {
+        private bool _isSorted;
+        private ListSortDirection _sortDirection;
+        private PropertyDescriptor _sortProperty;
+
+        public SortableBindingList() : base() { }
+
+        public SortableBindingList(IList<T> list) : base(list) { }
+
+        protected override bool SupportsSortingCore => true;
+
+        protected override bool IsSortedCore => _isSorted;
+
+        protected override ListSortDirection SortDirectionCore => _sortDirection;
+
+        protected override PropertyDescriptor SortPropertyCore => _sortProperty;
+
+        protected override void ApplySortCore(PropertyDescriptor prop, ListSortDirection direction)
+        {
+            List<T> itemsList = (List<T>)this.Items;
+
+            if (prop.PropertyType.GetInterface("IComparable") != null)
+            {
+                itemsList.Sort(delegate (T x, T y)
+                {
+                    object xValue = prop.GetValue(x);
+                    object yValue = prop.GetValue(y);
+
+                    // Handle nulls
+                    if (xValue == null && yValue == null) return 0;
+                    if (xValue == null) return direction == ListSortDirection.Ascending ? -1 : 1;
+                    if (yValue == null) return direction == ListSortDirection.Ascending ? 1 : -1;
+
+                    int result = ((IComparable)xValue).CompareTo(yValue);
+                    return direction == ListSortDirection.Ascending ? result : -result;
+                });
+
+                _isSorted = true;
+                _sortDirection = direction;
+                _sortProperty = prop;
+
+                // Notify that the list has been reset (re-sorted)
+                this.OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
+            }
+        }
+
+        protected override void RemoveSortCore()
+        {
+            _isSorted = false;
+            _sortProperty = null;
+        }
     }
 }

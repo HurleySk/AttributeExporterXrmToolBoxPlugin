@@ -33,6 +33,7 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         public bool? IsPrimaryName { get; set; }
         public bool? IsLogical { get; set; }
         public string AttributeOf { get; set; }
+        public bool? IsIntersectEntity { get; set; }
 
         // === Validity Flags ===
         public bool? IsValidForCreate { get; set; }

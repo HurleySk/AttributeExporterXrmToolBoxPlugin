@@ -36,6 +36,11 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         public string IsPrimaryId { get; set; }
 
         /// <summary>
+        /// Filter to exclude N:N relationship intersection entities
+        /// </summary>
+        public bool ExcludeIntersectEntities { get; set; }
+
+        /// <summary>
         /// Creates a new FilterCriteria with default values
         /// </summary>
         public FilterCriteria()
@@ -46,6 +51,7 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
             Required = "All";
             IsCustom = "All";
             IsPrimaryId = "All";
+            ExcludeIntersectEntities = false;
         }
 
         /// <summary>
@@ -58,7 +64,8 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
                    (AttributeType != "All" && !string.IsNullOrWhiteSpace(AttributeType)) ||
                    (Required != "All" && !string.IsNullOrWhiteSpace(Required)) ||
                    (IsCustom != "All" && !string.IsNullOrWhiteSpace(IsCustom)) ||
-                   (IsPrimaryId != "All" && !string.IsNullOrWhiteSpace(IsPrimaryId));
+                   (IsPrimaryId != "All" && !string.IsNullOrWhiteSpace(IsPrimaryId)) ||
+                   ExcludeIntersectEntities;
         }
 
         /// <summary>
@@ -72,6 +79,7 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
             Required = "All";
             IsCustom = "All";
             IsPrimaryId = "All";
+            ExcludeIntersectEntities = false;
         }
     }
 }

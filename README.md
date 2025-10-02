@@ -17,14 +17,16 @@ XRM ToolBox plugin for exporting Dataverse/Dynamics 365 attribute metadata to CS
 - **Copy Support**: Right-click context menu or Ctrl+C to copy selected cells/rows
 - **Cell Viewer**: Double-click any cell to view full content with copy button for long values
 - **Dynamic Counter**: Real-time display of selected attribute count
-- **Sortable Columns**: Click headers to sort, with persistent sort state
+- **Sortable Columns**: Click column headers to sort ascending/descending
 - **Drag-Drop Reordering**: Customize column order directly in grid
+- **Column Management**: Right-click column headers to hide columns or access column options
+- **Context-Aware Menus**: Right-click menus adapt based on selection state
 
 ### Filtering & Search
-- **Real-Time Filters**: Table name, attribute name, type, required level, custom/managed, primary ID
+- **Real-Time Filters**: Table name, attribute name, type, required level, custom/managed, primary ID, exclude N:N tables
 - **Always-Visible Panel**: Expanded filter controls for quick access
 - **Session-Based**: Filters reset on new loads for clean slate each time
-- **Total Counter**: Always displays total attribute count
+- **Smart Counters**: Displays both filtered count and total attribute count
 
 ### Productivity
 - **Reload Solutions**: Refresh solution list without reconnecting
@@ -75,11 +77,12 @@ XRM ToolBox plugin for exporting Dataverse/Dynamics 365 attribute metadata to CS
 
 #### Filtering Data
 - **Apply filters**: Type in text boxes or select from dropdowns - results update in real-time
+- **Exclude N:N Tables**: Check "Exclude N:N Tables" to filter out intersection entities from many-to-many relationships
 - **Clear filters**: Click "Clear Filters" button
 - **Session-based**: Filters reset when loading new data or changing scope
 - **Counters**:
-  - "Total Attributes: X" shows loaded count
-  - "Selected Attributes: Y" updates as you select rows/cells
+  - "Showing: X of Y Total" displays filtered vs. total attribute count
+  - "Selected Attributes: Z" updates as you select rows/cells
 
 ### Column Presets
 
@@ -167,7 +170,18 @@ Built on [XRM ToolBox](https://www.xrmtoolbox.com/) by Tanguy Touzard
 
 ## Release Notes
 
-### Version 2.0.0 (Latest)
+### Version 2.0.1.1 (Latest)
+**Enhanced Filtering, Sorting, and Column Management**
+
+- **N:N Filter**: Exclude intersection entities (many-to-many relationship tables) with checkbox filter
+- **Smart Counters**: Counter now shows "Showing: X of Y Total" for better filtering visibility
+- **Column Sorting**: Click any column header to sort ascending/descending (now working properly)
+- **Column Management**: Right-click column headers to hide columns or access column options
+- **Context-Aware Menus**: Grid context menu adapts based on whether cells are selected
+- **Column Options**: Added "Column Options..." to right-click menus for quick column configuration
+- **UX Improvements**: Prevents hiding the last visible column, clears sort state when hiding sorted column
+
+### Version 2.0.0
 **Major Release - Enhanced Data Interaction**
 
 - Cell-level selection with multi-select (Ctrl+Click, Shift+Click)
