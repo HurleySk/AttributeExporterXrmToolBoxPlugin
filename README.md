@@ -170,10 +170,15 @@ Built on [XRM ToolBox](https://www.xrmtoolbox.com/) by Tanguy Touzard
 
 ## Release Notes
 
-### Version 2.0.1.4 (Latest)
+### Version 2.0.1.5 (Latest)
+**Fix Plugin Load Failure**
+
+- Removed bundled `System.Threading.Tasks.Extensions.dll` and `Microsoft.Bcl.AsyncInterfaces.dll` from package — XrmToolBox provides these, and shipping duplicates caused assembly version conflicts (`ReflectionTypeLoadException` on startup)
+
+### Version 2.0.1.4
 **NuGet Package Dependency Fix**
 
-- Fixed missing `System.Threading.Tasks.Extensions.dll` and `Microsoft.Bcl.AsyncInterfaces.dll` in NuGet package causing plugin load failure in XrmToolBox
+- Added `System.Threading.Tasks.Extensions.dll` and `Microsoft.Bcl.AsyncInterfaces.dll` to NuGet package (reverted in 2.0.1.5)
 
 ### Version 2.0.1.3
 **Code Quality Refactoring**

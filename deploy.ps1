@@ -17,14 +17,8 @@ $pluginFiles = @(
 )
 
 $dependencyFiles = @(
-    @{
-        Name = "Microsoft.Bcl.AsyncInterfaces.dll"
-        NuGetPath = "$env:USERPROFILE\.nuget\packages\microsoft.bcl.asyncinterfaces\1.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll"
-    },
-    @{
-        Name = "System.Threading.Tasks.Extensions.dll"
-        NuGetPath = "$env:USERPROFILE\.nuget\packages\system.threading.tasks.extensions\4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll"
-    }
+    # No extra dependencies needed - XrmToolBox provides System.Threading.Tasks.Extensions
+    # and Microsoft.Bcl.AsyncInterfaces. Shipping them in Plugins/ causes version conflicts.
 )
 
 Write-Host "`n=== XRM ToolBox Plugin Deployment ===" -ForegroundColor Cyan
