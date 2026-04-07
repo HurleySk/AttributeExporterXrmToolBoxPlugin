@@ -13,10 +13,10 @@
     <AssemblyName>AttributeExporterXrmToolBoxPlugin</AssemblyName>
     <RootNamespace>AttributeExporterXrmToolBoxPlugin</RootNamespace>
     <Title>Attribute Metadata Exporter</Title>
-    <Version>2.0.1.5</Version>
+    <Version>2.0.1.6</Version>
     <Authors>Samuel Hurley</Authors>
-    <Company>Procentrix</Company>
-    <Copyright>Copyright (c) Samuel Hurley 2025</Copyright>
+    <Company>Samuel Hurley</Company>
+    <Copyright>Copyright (c) Samuel Hurley 2026</Copyright>
     <Description>XRM ToolBox Plugin for browsing and exporting attribute metadata to CSV with advanced column management</Description>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
@@ -31,7 +31,7 @@
     <PackageIconUrl>https://raw.githubusercontent.com/HurleySk/AttributeExporterXrmToolBoxPlugin/main/Resources/icon-128.png</PackageIconUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>XrmToolBox;Dynamics365;Dataverse;PowerPlatform;Metadata;Export;CSV</PackageTags>
-    <PackageReleaseNotes>Version 2.0.1.5: Remove bundled System.Threading.Tasks.Extensions.dll and Microsoft.Bcl.AsyncInterfaces.dll from package - XrmToolBox provides these, and shipping duplicates caused assembly version conflicts and ReflectionTypeLoadException on startup.</PackageReleaseNotes>
+    <PackageReleaseNotes>Version 2.0.1.6: New plugin icon (table/grid with CSV export arrow), update company attribution.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/HurleySk/AttributeExporterXrmToolBoxPlugin</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
