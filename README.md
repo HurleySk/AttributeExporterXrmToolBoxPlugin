@@ -170,7 +170,22 @@ Built on [XRM ToolBox](https://www.xrmtoolbox.com/) by Tanguy Touzard
 
 ## Release Notes
 
-### Version 2.0.1.1 (Latest)
+### Version 2.0.1.3 (Latest)
+**Code Quality Refactoring**
+
+- **Extracted Helper Methods**: Consolidated duplicated PostWorkCallBack logic into shared `HandleAttributesLoaded` method
+- **Dedicated Files**: Moved `SortableBindingList<T>` to `Models/SortableBindingList.cs` and extracted inline cell viewer to `Forms/CellValueViewerDialog.cs`
+- **Constants**: Replaced magic strings (`"All"`, `"Yes"`, `"No"`) with `FilterCriteria` constants and hardcoded component type `2` with named constant
+- **Extracted Helpers**: `GetSelectedRowCount()` method replaces 3 duplicated LINQ expressions
+- **Performance**: Cached reflection `PropertyInfo` lookups in CSV export (once per column instead of once per cell)
+
+### Version 2.0.1.2
+**NuGet Package Fix**
+
+- Fixed missing CsvHelper.dll in NuGet package (fixes #1)
+- Removed unused Costura.Fody dependency
+
+### Version 2.0.1.1
 **Enhanced Filtering, Sorting, and Column Management**
 
 - **N:N Filter**: Exclude intersection entities (many-to-many relationship tables) with checkbox filter

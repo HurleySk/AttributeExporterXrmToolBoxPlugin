@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -28,6 +29,8 @@ namespace AttributeExporterXrmToolBoxPlugin
         private string _lastLoadedState = null; // Tracks what was last loaded (solution ID or "AllEntities")
         private BindingSource _bindingSource; // Enables sorting support for DataGridView
         private int _rightClickedColumnIndex = -1; // Tracks which column header was right-clicked
+
+        private const int ComponentTypeAttribute = 2;
 
         public AttributeExporterControl()
         {
@@ -120,7 +123,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                         {
                             Conditions =
                             {
-                                new ConditionExpression("componenttype", ConditionOperator.Equal, 2) // 2 = Attribute
+                                new ConditionExpression("componenttype", ConditionOperator.Equal, ComponentTypeAttribute)
                             }
                         },
                         Distinct = true
@@ -333,85 +336,8 @@ namespace AttributeExporterXrmToolBoxPlugin
                 var columnName = dgvAttributes.Columns[e.ColumnIndex].HeaderText;
                 var cellValue = cell.Value?.ToString() ?? "(empty)";
 
-                // Show custom dialog with copy button
-                using (var dialog = new Form())
+                using (var dialog = new Forms.CellValueViewerDialog(columnName, cellValue))
                 {
-                    dialog.Text = columnName;
-                    dialog.Width = 500;
-                    dialog.Height = 350;
-                    dialog.StartPosition = FormStartPosition.CenterParent;
-                    dialog.FormBorderStyle = FormBorderStyle.Sizable;
-                    dialog.MinimizeBox = false;
-                    dialog.MaximizeBox = false;
-
-                    // TextBox to display value
-                    var textBox = new TextBox
-                    {
-                        Multiline = true,
-                        ReadOnly = true,
-                        ScrollBars = ScrollBars.Both,
-                        Text = cellValue,
-                        Dock = DockStyle.Fill,
-                        Font = new System.Drawing.Font("Segoe UI", 9F),
-                        BorderStyle = BorderStyle.None,
-                        BackColor = System.Drawing.SystemColors.Window
-                    };
-
-                    // Panel for buttons
-                    var buttonPanel = new Panel
-                    {
-                        Height = 40,
-                        Dock = DockStyle.Bottom,
-                        Padding = new Padding(10)
-                    };
-
-                    // Copy button
-                    var btnCopy = new Button
-                    {
-                        Text = "Copy Text",
-                        Width = 90,
-                        Height = 30,
-                        Location = new System.Drawing.Point(10, 5),
-                        DialogResult = DialogResult.None
-                    };
-                    btnCopy.Click += (s, args) =>
-                    {
-                        Clipboard.SetText(cellValue);
-                        btnCopy.Text = "Copied!";
-                        Task.Delay(1000).ContinueWith(t =>
-                        {
-                            if (!btnCopy.IsDisposed)
-                            {
-                                btnCopy.Invoke(new Action(() => btnCopy.Text = "Copy Text"));
-                            }
-                        });
-                    };
-
-                    // OK button
-                    var btnOk = new Button
-                    {
-                        Text = "OK",
-                        Width = 80,
-                        Height = 30,
-                        Location = new System.Drawing.Point(110, 5),
-                        DialogResult = DialogResult.OK
-                    };
-
-                    buttonPanel.Controls.Add(btnCopy);
-                    buttonPanel.Controls.Add(btnOk);
-
-                    // Panel for textbox with padding
-                    var textPanel = new Panel
-                    {
-                        Dock = DockStyle.Fill,
-                        Padding = new Padding(10)
-                    };
-                    textPanel.Controls.Add(textBox);
-
-                    dialog.Controls.Add(textPanel);
-                    dialog.Controls.Add(buttonPanel);
-                    dialog.AcceptButton = btnOk;
-
                     dialog.ShowDialog(this);
                 }
             }
@@ -422,15 +348,15 @@ namespace AttributeExporterXrmToolBoxPlugin
             }
         }
 
-        private void dgvAttributes_SelectionChanged(object sender, EventArgs e)
-        {
-            // Count unique rows that have at least one selected cell
-            var selectedRowCount = dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
+        private int GetSelectedRowCount() =>
+            dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
                 .Select(c => c.RowIndex)
                 .Distinct()
                 .Count();
 
-            lblAttributeCount.Text = $"Selected Attributes: {selectedRowCount}";
+        private void dgvAttributes_SelectionChanged(object sender, EventArgs e)
+        {
+            lblAttributeCount.Text = $"Selected Attributes: {GetSelectedRowCount()}";
         }
 
         private void rdoSelectedSolution_CheckedChanged(object sender, EventArgs e)
@@ -522,33 +448,8 @@ namespace AttributeExporterXrmToolBoxPlugin
                     }
                     args.Result = attributes;
                 },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show($"Error loading attributes: {args.Error.Message}", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    _allAttributes = (List<AttributeMetadataInfo>)args.Result;
-                    _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
-
-                    // Populate filter type dropdown with distinct types from loaded data
-                    PopulateFilterTypeComboBox();
-
-                    // Clear filters on new load
-                    ClearAllFilters();
-
-                    RefreshGrid();
-
-                    // Update state tracking for dynamic button text
-                    _attributesLoaded = true;
-                    _lastLoadedState = "AllEntities";
-                    UpdateLoadAttributesButtonText();
-
-                    MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from all entities",
-                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                PostWorkCallBack = (args) => HandleAttributesLoaded(args, "AllEntities",
+                    $"Successfully loaded {{0}} attributes from all entities")
             });
         }
 
@@ -568,7 +469,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                             Conditions =
                             {
                                 new ConditionExpression("solutionid", ConditionOperator.Equal, solution.Id),
-                                new ConditionExpression("componenttype", ConditionOperator.Equal, 2) // 2 = Attribute
+                                new ConditionExpression("componenttype", ConditionOperator.Equal, ComponentTypeAttribute)
                             }
                         }
                     };
@@ -667,34 +568,32 @@ namespace AttributeExporterXrmToolBoxPlugin
 
                     args.Result = attributes;
                 },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show($"Error loading attributes: {args.Error.Message}", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    _allAttributes = (List<AttributeMetadataInfo>)args.Result;
-                    _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
-
-                    // Populate filter type dropdown with distinct types from loaded data
-                    PopulateFilterTypeComboBox();
-
-                    // Clear filters on new load
-                    ClearAllFilters();
-
-                    RefreshGrid();
-
-                    // Update state tracking for dynamic button text
-                    _attributesLoaded = true;
-                    _lastLoadedState = solution.Id.ToString();
-                    UpdateLoadAttributesButtonText();
-
-                    MessageBox.Show($"Successfully loaded {_allAttributes.Count} attributes from solution '{solution.Name}'",
-                        "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                PostWorkCallBack = (args) => HandleAttributesLoaded(args, solution.Id.ToString(),
+                    $"Successfully loaded {{0}} attributes from solution '{solution.Name}'")
             });
+        }
+
+        private void HandleAttributesLoaded(RunWorkerCompletedEventArgs args, string loadedState, string successMessageFormat)
+        {
+            if (args.Error != null)
+            {
+                MessageBox.Show($"Error loading attributes: {args.Error.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            _allAttributes = (List<AttributeMetadataInfo>)args.Result;
+            _filteredAttributes = new List<AttributeMetadataInfo>(_allAttributes);
+
+            PopulateFilterTypeComboBox();
+            ClearAllFilters();
+            RefreshGrid();
+
+            _attributesLoaded = true;
+            _lastLoadedState = loadedState;
+            UpdateLoadAttributesButtonText();
+
+            MessageBox.Show(string.Format(successMessageFormat, _allAttributes.Count),
+                "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private string GetEntityLogicalName(Guid entityId)
@@ -830,29 +729,29 @@ namespace AttributeExporterXrmToolBoxPlugin
                 }
 
                 // Type filter
-                if (!string.IsNullOrWhiteSpace(filters.AttributeType) && filters.AttributeType != "All")
+                if (!string.IsNullOrWhiteSpace(filters.AttributeType) && filters.AttributeType != FilterCriteria.All)
                 {
                     filtered = filtered.Where(a => a.AttributeType == filters.AttributeType);
                 }
 
                 // Required filter
-                if (!string.IsNullOrWhiteSpace(filters.Required) && filters.Required != "All")
+                if (!string.IsNullOrWhiteSpace(filters.Required) && filters.Required != FilterCriteria.All)
                 {
-                    bool requiredValue = filters.Required == "Yes";
+                    bool requiredValue = filters.Required == FilterCriteria.Yes;
                     filtered = filtered.Where(a => a.Required == requiredValue);
                 }
 
                 // IsCustom filter
-                if (!string.IsNullOrWhiteSpace(filters.IsCustom) && filters.IsCustom != "All")
+                if (!string.IsNullOrWhiteSpace(filters.IsCustom) && filters.IsCustom != FilterCriteria.All)
                 {
-                    bool customValue = filters.IsCustom == "Yes";
+                    bool customValue = filters.IsCustom == FilterCriteria.Yes;
                     filtered = filtered.Where(a => a.IsCustomAttribute == customValue);
                 }
 
                 // IsPrimaryId filter
-                if (!string.IsNullOrWhiteSpace(filters.IsPrimaryId) && filters.IsPrimaryId != "All")
+                if (!string.IsNullOrWhiteSpace(filters.IsPrimaryId) && filters.IsPrimaryId != FilterCriteria.All)
                 {
-                    bool primaryIdValue = filters.IsPrimaryId == "Yes";
+                    bool primaryIdValue = filters.IsPrimaryId == FilterCriteria.Yes;
                     filtered = filtered.Where(a => a.IsPrimaryId == primaryIdValue);
                 }
 
@@ -904,13 +803,17 @@ namespace AttributeExporterXrmToolBoxPlugin
                         }
                         csv.NextRecord();
 
+                        // Cache PropertyInfo lookups (once per column, not once per cell)
+                        var propertyMap = visibleColumns
+                            .Select(col => new { col, prop = typeof(AttributeMetadataInfo).GetProperty(col.Name) })
+                            .ToList();
+
                         // Write data rows
                         foreach (var attr in _filteredAttributes)
                         {
-                            foreach (var col in visibleColumns)
+                            foreach (var entry in propertyMap)
                             {
-                                var propInfo = typeof(AttributeMetadataInfo).GetProperty(col.Name);
-                                var value = propInfo?.GetValue(attr);
+                                var value = entry.prop?.GetValue(attr);
                                 csv.WriteField(value?.ToString() ?? "");
                             }
                             csv.NextRecord();
@@ -968,10 +871,10 @@ namespace AttributeExporterXrmToolBoxPlugin
             {
                 _columnConfiguration.ActiveFilters.TableName = txtFilterTable.Text;
                 _columnConfiguration.ActiveFilters.AttributeName = txtFilterAttribute.Text;
-                _columnConfiguration.ActiveFilters.AttributeType = cboFilterType.SelectedItem?.ToString() ?? "All";
-                _columnConfiguration.ActiveFilters.Required = cboFilterRequired.SelectedItem?.ToString() ?? "All";
-                _columnConfiguration.ActiveFilters.IsCustom = cboFilterCustom.SelectedItem?.ToString() ?? "All";
-                _columnConfiguration.ActiveFilters.IsPrimaryId = cboFilterPrimaryId.SelectedItem?.ToString() ?? "All";
+                _columnConfiguration.ActiveFilters.AttributeType = cboFilterType.SelectedItem?.ToString() ?? FilterCriteria.All;
+                _columnConfiguration.ActiveFilters.Required = cboFilterRequired.SelectedItem?.ToString() ?? FilterCriteria.All;
+                _columnConfiguration.ActiveFilters.IsCustom = cboFilterCustom.SelectedItem?.ToString() ?? FilterCriteria.All;
+                _columnConfiguration.ActiveFilters.IsPrimaryId = cboFilterPrimaryId.SelectedItem?.ToString() ?? FilterCriteria.All;
                 _columnConfiguration.ActiveFilters.ExcludeIntersectEntities = chkExcludeIntersect.Checked;
 
                 // Filters are not persisted to disk - only active during session
@@ -1027,7 +930,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 .ToList();
 
             cboFilterType.Items.Clear();
-            cboFilterType.Items.Add("All");
+            cboFilterType.Items.Add(FilterCriteria.All);
             foreach (var type in distinctTypes)
             {
                 cboFilterType.Items.Add(type);
@@ -1065,7 +968,7 @@ namespace AttributeExporterXrmToolBoxPlugin
             if (comboBox.Items.Count == 0)
                 return;
 
-            if (string.IsNullOrEmpty(value) || value == "All")
+            if (string.IsNullOrEmpty(value) || value == FilterCriteria.All)
             {
                 comboBox.SelectedIndex = 0;
             }
@@ -1091,10 +994,7 @@ namespace AttributeExporterXrmToolBoxPlugin
         {
             // Check if any cells are selected
             int selectedCellCount = dgvAttributes.SelectedCells.Count;
-            int selectedRowCount = dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
-                .Select(c => c.RowIndex)
-                .Distinct()
-                .Count();
+            int selectedRowCount = GetSelectedRowCount();
 
             // Show copy options only when cells are selected
             bool hasCellsSelected = selectedCellCount > 0;
@@ -1139,9 +1039,7 @@ namespace AttributeExporterXrmToolBoxPlugin
                 // Get unique rows from selected cells
                 var selectedRows = dgvAttributes.SelectedCells.Cast<DataGridViewCell>()
                     .Select(c => c.RowIndex)
-                    .Distinct()
-                    .OrderBy(r => r)
-                    .ToList();
+                    .Distinct().OrderBy(r => r).ToList();
 
                 var result = new System.Text.StringBuilder();
 
@@ -1271,60 +1169,4 @@ namespace AttributeExporterXrmToolBoxPlugin
         #endregion
     }
 
-    /// <summary>
-    /// Sortable BindingList implementation for DataGridView sorting support
-    /// </summary>
-    public class SortableBindingList<T> : BindingList<T>
-    {
-        private bool _isSorted;
-        private ListSortDirection _sortDirection;
-        private PropertyDescriptor _sortProperty;
-
-        public SortableBindingList() : base() { }
-
-        public SortableBindingList(IList<T> list) : base(list) { }
-
-        protected override bool SupportsSortingCore => true;
-
-        protected override bool IsSortedCore => _isSorted;
-
-        protected override ListSortDirection SortDirectionCore => _sortDirection;
-
-        protected override PropertyDescriptor SortPropertyCore => _sortProperty;
-
-        protected override void ApplySortCore(PropertyDescriptor prop, ListSortDirection direction)
-        {
-            List<T> itemsList = (List<T>)this.Items;
-
-            if (prop.PropertyType.GetInterface("IComparable") != null)
-            {
-                itemsList.Sort(delegate (T x, T y)
-                {
-                    object xValue = prop.GetValue(x);
-                    object yValue = prop.GetValue(y);
-
-                    // Handle nulls
-                    if (xValue == null && yValue == null) return 0;
-                    if (xValue == null) return direction == ListSortDirection.Ascending ? -1 : 1;
-                    if (yValue == null) return direction == ListSortDirection.Ascending ? 1 : -1;
-
-                    int result = ((IComparable)xValue).CompareTo(yValue);
-                    return direction == ListSortDirection.Ascending ? result : -result;
-                });
-
-                _isSorted = true;
-                _sortDirection = direction;
-                _sortProperty = prop;
-
-                // Notify that the list has been reset (re-sorted)
-                this.OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
-            }
-        }
-
-        protected override void RemoveSortCore()
-        {
-            _isSorted = false;
-            _sortProperty = null;
-        }
-    }
 }

@@ -5,6 +5,10 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
     /// </summary>
     public class FilterCriteria
     {
+        public const string All = "All";
+        public const string Yes = "Yes";
+        public const string No = "No";
+
         /// <summary>
         /// Filter text for table name (searches both TableLogicalName and TableDisplayName)
         /// </summary>
@@ -16,22 +20,22 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         public string AttributeName { get; set; }
 
         /// <summary>
-        /// Filter for attribute type (e.g., "String", "Integer", "Lookup", or "All")
+        /// Filter for attribute type (e.g., "String", "Integer", "Lookup", or All)
         /// </summary>
         public string AttributeType { get; set; }
 
         /// <summary>
-        /// Filter for required status: "All", "Yes", or "No"
+        /// Filter for required status: All, "Yes", or "No"
         /// </summary>
         public string Required { get; set; }
 
         /// <summary>
-        /// Filter for custom attribute flag: "All", "Yes", or "No"
+        /// Filter for custom attribute flag: All, "Yes", or "No"
         /// </summary>
         public string IsCustom { get; set; }
 
         /// <summary>
-        /// Filter for primary ID flag: "All", "Yes", or "No"
+        /// Filter for primary ID flag: All, "Yes", or "No"
         /// </summary>
         public string IsPrimaryId { get; set; }
 
@@ -47,10 +51,10 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         {
             TableName = string.Empty;
             AttributeName = string.Empty;
-            AttributeType = "All";
-            Required = "All";
-            IsCustom = "All";
-            IsPrimaryId = "All";
+            AttributeType = All;
+            Required = All;
+            IsCustom = All;
+            IsPrimaryId = All;
             ExcludeIntersectEntities = false;
         }
 
@@ -61,10 +65,10 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         {
             return !string.IsNullOrWhiteSpace(TableName) ||
                    !string.IsNullOrWhiteSpace(AttributeName) ||
-                   (AttributeType != "All" && !string.IsNullOrWhiteSpace(AttributeType)) ||
-                   (Required != "All" && !string.IsNullOrWhiteSpace(Required)) ||
-                   (IsCustom != "All" && !string.IsNullOrWhiteSpace(IsCustom)) ||
-                   (IsPrimaryId != "All" && !string.IsNullOrWhiteSpace(IsPrimaryId)) ||
+                   (AttributeType != All && !string.IsNullOrWhiteSpace(AttributeType)) ||
+                   (Required != All && !string.IsNullOrWhiteSpace(Required)) ||
+                   (IsCustom != All && !string.IsNullOrWhiteSpace(IsCustom)) ||
+                   (IsPrimaryId != All && !string.IsNullOrWhiteSpace(IsPrimaryId)) ||
                    ExcludeIntersectEntities;
         }
 
@@ -75,10 +79,10 @@ namespace AttributeExporterXrmToolBoxPlugin.Models
         {
             TableName = string.Empty;
             AttributeName = string.Empty;
-            AttributeType = "All";
-            Required = "All";
-            IsCustom = "All";
-            IsPrimaryId = "All";
+            AttributeType = All;
+            Required = All;
+            IsCustom = All;
+            IsPrimaryId = All;
             ExcludeIntersectEntities = false;
         }
     }
